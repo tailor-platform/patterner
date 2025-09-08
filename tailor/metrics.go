@@ -1,6 +1,8 @@
 package tailor
 
-import "math"
+import (
+	"math"
+)
 
 const (
 	pageSize = 100

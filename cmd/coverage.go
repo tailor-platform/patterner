@@ -23,17 +23,23 @@ package cmd
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/k1LoW/duration"
 	"github.com/spf13/cobra"
 	"github.com/tailor-platform/patterner/config"
 	"github.com/tailor-platform/patterner/tailor"
 )
 
-var lintCmd = &cobra.Command{
-	Use:   "lint",
-	Short: "lint the resources in the workspace",
-	Long:  `lint the resources in the specified workspace.`,
-	Args:  cobra.NoArgs,
+var (
+	since      string
+	fullReport bool
+)
+
+var coverageCmd = &cobra.Command{
+	Use:   "coverage",
+	Short: "display the pipeline resolver step coverage",
+	Long:  `display the pipeline resolver step coverage.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		spi.Start()
 		defer spi.Stop()
@@ -48,28 +54,46 @@ var lintCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		resources, err := c.Resources(cmd.Context())
+		d, err := duration.Parse(since)
+		if err != nil {
+			return err
+		}
+		s := time.Now().Add(-d)
+		opts := []tailor.ResourceOption{
+			tailor.WithExecutionResults(&s),
+			tailor.WithoutApplications(),
+			tailor.WithoutStateFlow(),
+			tailor.WithoutTailorDB(),
+		}
+		resources, err := c.Resources(cmd.Context(), opts...)
 		if err != nil {
 			return err
 		}
 		spi.Disable()
-		warns, err := c.Lint(resources)
+		coverage, err := c.Coverage(resources)
 		if err != nil {
 			return err
 		}
-		for _, w := range warns {
-			fmt.Printf("[%s] %s: %s\n", w.Type, w.Name, w.Message)
-		}
-		if len(warns) > cfg.Lint.Acceptable {
-			if cfg.Lint.Acceptable == 0 {
-				return fmt.Errorf("%d warnings found", len(warns))
+		var total, covered int
+		for _, rc := range coverage {
+			if fullReport {
+				cover := float64(float64(rc.CoveredSteps)/float64(rc.TotalSteps)) * 100
+				fmt.Printf("%5s%% [%d/%d] %s\n", fmt.Sprintf("%.1f", cover), rc.CoveredSteps, rc.TotalSteps, rc.Name)
 			}
-			return fmt.Errorf("%d warnings found, which exceeds the acceptable number of %d", len(warns), cfg.Lint.Acceptable)
+			total += rc.TotalSteps
+			covered += rc.CoveredSteps
 		}
+		if fullReport {
+			fmt.Println()
+		}
+		fmt.Printf("%s %.1f%% [%d/%d]\n", "Pipeline Resolver Step Coverage", float64(float64(covered)/float64(total))*100, covered, total)
+
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(lintCmd)
+	rootCmd.AddCommand(coverageCmd)
+	coverageCmd.Flags().StringVarP(&since, "since", "s", "30min", "only consider executions since the given duration (e.g., 24hours, 30min, 15sec)")
+	coverageCmd.Flags().BoolVarP(&fullReport, "full-report", "f", false, "display full report")
 }
