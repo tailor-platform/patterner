@@ -6,8 +6,8 @@ import (
 	"slices"
 
 	tailorv1 "buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go/tailor/v1"
-	"github.com/vektah/gqlparser/ast"
-	"github.com/vektah/gqlparser/parser"
+	"github.com/vektah/gqlparser/v2/ast"
+	"github.com/vektah/gqlparser/v2/parser"
 )
 
 type LintTargetType string
