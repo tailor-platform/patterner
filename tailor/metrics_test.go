@@ -19,13 +19,14 @@ func TestClient_Metrics(t *testing.T) {
 				StateFlows:   []*StateFlow{},
 			},
 			expectedMetrics: map[string]float64{
-				"pipelines_total":               0,
-				"pipeline_resolvers_total":      0,
-				"pipeline_resolver_steps_total": 0,
-				"tailordbs_total":               0,
-				"tailordb_types_total":          0,
-				"tailordb_type_fields_total":    0,
-				"stateflows_total":              0,
+				"pipelines_total":                         0,
+				"pipeline_resolvers_total":                0,
+				"pipeline_resolver_steps_total":           0,
+				"pipeline_resolver_execution_paths_total": 0, // 0 resolvers = 0 paths
+				"tailordbs_total":                         0,
+				"tailordb_types_total":                    0,
+				"tailordb_type_fields_total":              0,
+				"stateflows_total":                        0,
 			},
 		},
 		{
@@ -62,13 +63,14 @@ func TestClient_Metrics(t *testing.T) {
 				},
 			},
 			expectedMetrics: map[string]float64{
-				"pipelines_total":               1,
-				"pipeline_resolvers_total":      1,
-				"pipeline_resolver_steps_total": 1,
-				"tailordbs_total":               1,
-				"tailordb_types_total":          1,
-				"tailordb_type_fields_total":    2, // id and name fields
-				"stateflows_total":              1,
+				"pipelines_total":                         1,
+				"pipeline_resolvers_total":                1,
+				"pipeline_resolver_steps_total":           1,
+				"pipeline_resolver_execution_paths_total": 1, // 1^0 = 1 (no tests)
+				"tailordbs_total":                         1,
+				"tailordb_types_total":                    1,
+				"tailordb_type_fields_total":              2, // id and name fields
+				"stateflows_total":                        1,
 			},
 		},
 		{
@@ -148,13 +150,14 @@ func TestClient_Metrics(t *testing.T) {
 				},
 			},
 			expectedMetrics: map[string]float64{
-				"pipelines_total":               2, // ns1, ns2
-				"pipeline_resolvers_total":      3, // resolver1, resolver2, resolver3
-				"pipeline_resolver_steps_total": 6, // 2+3+1 steps
-				"tailordbs_total":               2, // two TailorDB instances
-				"tailordb_types_total":          3, // User, Post, Comment
-				"tailordb_type_fields_total":    9, // 3+2+4 fields
-				"stateflows_total":              3, // flow1, flow2, flow3
+				"pipelines_total":                         2, // ns1, ns2
+				"pipeline_resolvers_total":                3, // resolver1, resolver2, resolver3
+				"pipeline_resolver_steps_total":           6, // 2+3+1 steps
+				"pipeline_resolver_execution_paths_total": 3, // 2^0 + 3^0 + 1^0 = 1+1+1 (no tests)
+				"tailordbs_total":                         2, // two TailorDB instances
+				"tailordb_types_total":                    3, // User, Post, Comment
+				"tailordb_type_fields_total":              9, // 3+2+4 fields
+				"stateflows_total":                        3, // flow1, flow2, flow3
 			},
 		},
 		{
@@ -189,13 +192,14 @@ func TestClient_Metrics(t *testing.T) {
 				},
 			},
 			expectedMetrics: map[string]float64{
-				"pipelines_total":               0,
-				"pipeline_resolvers_total":      0,
-				"pipeline_resolver_steps_total": 0,
-				"tailordbs_total":               1,
-				"tailordb_types_total":          1,
-				"tailordb_type_fields_total":    2, // Only top-level fields are counted
-				"stateflows_total":              0,
+				"pipelines_total":                         0,
+				"pipeline_resolvers_total":                0,
+				"pipeline_resolver_steps_total":           0,
+				"pipeline_resolver_execution_paths_total": 0, // 0 resolvers = 0 paths
+				"tailordbs_total":                         1,
+				"tailordb_types_total":                    1,
+				"tailordb_type_fields_total":              2, // Only top-level fields are counted
+				"stateflows_total":                        0,
 			},
 		},
 	}
@@ -364,6 +368,9 @@ func TestClient_Metrics_SpecificMetricValues(t *testing.T) {
 	if metricMap["pipeline_resolver_steps_total"].Value != float64(5) {
 		t.Errorf("Expected pipeline_resolver_steps_total to be 5, got %f", metricMap["pipeline_resolver_steps_total"].Value)
 	}
+	if metricMap["pipeline_resolver_execution_paths_total"].Value != float64(2) {
+		t.Errorf("Expected pipeline_resolver_execution_paths_total to be 2, got %f", metricMap["pipeline_resolver_execution_paths_total"].Value)
+	}
 
 	// Test TailorDB metrics
 	if metricMap["tailordbs_total"].Value != float64(1) {
@@ -425,6 +432,9 @@ func TestClient_Metrics_EdgeCases(t *testing.T) {
 		if metricMap["pipeline_resolver_steps_total"] != float64(0) {
 			t.Errorf("Expected pipeline_resolver_steps_total to be 0, got %f", metricMap["pipeline_resolver_steps_total"])
 		}
+		if metricMap["pipeline_resolver_execution_paths_total"] != float64(0) {
+			t.Errorf("Expected pipeline_resolver_execution_paths_total to be 0, got %f", metricMap["pipeline_resolver_execution_paths_total"])
+		}
 		if metricMap["tailordbs_total"] != float64(0) {
 			t.Errorf("Expected tailordbs_total to be 0, got %f", metricMap["tailordbs_total"])
 		}
@@ -471,6 +481,9 @@ func TestClient_Metrics_EdgeCases(t *testing.T) {
 		}
 		if metricMap["pipeline_resolver_steps_total"] != float64(0) {
 			t.Errorf("Expected pipeline_resolver_steps_total to be 0, got %f", metricMap["pipeline_resolver_steps_total"])
+		}
+		if metricMap["pipeline_resolver_execution_paths_total"] != float64(0) {
+			t.Errorf("Expected pipeline_resolver_execution_paths_total to be 0, got %f", metricMap["pipeline_resolver_execution_paths_total"])
 		}
 	})
 
@@ -569,6 +582,7 @@ func TestClient_Metrics_MetricNames(t *testing.T) {
 		"pipelines_total",
 		"pipeline_resolvers_total",
 		"pipeline_resolver_steps_total",
+		"pipeline_resolver_execution_paths_total",
 		"tailordbs_total",
 		"tailordb_types_total",
 		"tailordb_type_fields_total",
@@ -618,13 +632,14 @@ func TestClient_Metrics_MetricDescriptions(t *testing.T) {
 	}
 
 	expectedDescriptions := map[string]string{
-		"pipelines_total":               "Total number of pipelines",
-		"pipeline_resolvers_total":      "Total number of pipeline resolvers",
-		"pipeline_resolver_steps_total": "Total number of pipeline resolver steps",
-		"tailordbs_total":               "Total number of TailorDBs",
-		"tailordb_types_total":          "Total number of TailorDB types",
-		"tailordb_type_fields_total":    "Total number of TailorDB type fields",
-		"stateflows_total":              "Total number of StateFlows",
+		"pipelines_total":                         "Total number of pipelines",
+		"pipeline_resolvers_total":                "Total number of pipeline resolvers",
+		"pipeline_resolver_steps_total":           "Total number of pipeline resolver steps",
+		"pipeline_resolver_execution_paths_total": "Total number of pipeline resolver execution paths",
+		"tailordbs_total":                         "Total number of TailorDBs",
+		"tailordb_types_total":                    "Total number of TailorDB types",
+		"tailordb_type_fields_total":              "Total number of TailorDB type fields",
+		"stateflows_total":                        "Total number of StateFlows",
 	}
 
 	for _, metric := range metrics {
@@ -679,6 +694,7 @@ func TestClient_Metrics_LargeNumbers(t *testing.T) {
 				Steps: steps,
 			}
 		}
+
 		pipelines[i] = &Pipeline{
 			NamespaceName: "namespace",
 			Resolvers:     resolvers,
@@ -709,4 +725,363 @@ func TestClient_Metrics_LargeNumbers(t *testing.T) {
 	if metricMap["pipeline_resolver_steps_total"] != float64(5000) {
 		t.Errorf("Expected pipeline_resolver_steps_total to be 5000, got %f", metricMap["pipeline_resolver_steps_total"])
 	}
+	if metricMap["pipeline_resolver_execution_paths_total"] != float64(1000) {
+		t.Errorf("Expected pipeline_resolver_execution_paths_total to be 1000, got %f", metricMap["pipeline_resolver_execution_paths_total"])
+	}
+}
+
+func TestClient_Metrics_ExecutionPaths(t *testing.T) {
+	tests := []struct {
+		name            string
+		resources       *Resources
+		expectedMetrics map[string]float64
+	}{
+		{
+			name: "resolver with tests - basic calculation",
+			resources: &Resources{
+				Pipelines: []*Pipeline{
+					{
+						NamespaceName: "test-namespace",
+						Resolvers: []*PipelineResolver{
+							{
+								Name: "resolver_with_tests",
+								Steps: []*PipelineStep{
+									{
+										Name: "step1",
+										Operation: PipelineStepOperation{
+											Test: "test1",
+										},
+									},
+									{
+										Name: "step2",
+										Operation: PipelineStepOperation{
+											Test: "test2",
+										},
+									},
+									{
+										Name: "step3",
+										Operation: PipelineStepOperation{
+											Test: "", // no test
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedMetrics: map[string]float64{
+				"pipelines_total":                         1,
+				"pipeline_resolvers_total":                1,
+				"pipeline_resolver_steps_total":           3,
+				"pipeline_resolver_execution_paths_total": 9, // 3^2 = 9 (3 steps, 2 tests)
+			},
+		},
+		{
+			name: "multiple resolvers with different test counts",
+			resources: &Resources{
+				Pipelines: []*Pipeline{
+					{
+						NamespaceName: "test-namespace",
+						Resolvers: []*PipelineResolver{
+							{
+								Name: "resolver1",
+								Steps: []*PipelineStep{
+									{
+										Name: "step1",
+										Operation: PipelineStepOperation{
+											Test: "test1",
+										},
+									},
+									{
+										Name: "step2",
+										Operation: PipelineStepOperation{
+											Test: "test2",
+										},
+									},
+								},
+							},
+							{
+								Name: "resolver2",
+								Steps: []*PipelineStep{
+									{
+										Name: "step1",
+										Operation: PipelineStepOperation{
+											Test: "test1",
+										},
+									},
+									{
+										Name: "step2",
+										Operation: PipelineStepOperation{
+											Test: "", // no test
+										},
+									},
+									{
+										Name: "step3",
+										Operation: PipelineStepOperation{
+											Test: "", // no test
+										},
+									},
+								},
+							},
+							{
+								Name: "resolver3",
+								Steps: []*PipelineStep{
+									{
+										Name: "step1",
+										Operation: PipelineStepOperation{
+											Test: "", // no test
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedMetrics: map[string]float64{
+				"pipelines_total":                         1,
+				"pipeline_resolvers_total":                3,
+				"pipeline_resolver_steps_total":           6, // 2+3+1 steps
+				"pipeline_resolver_execution_paths_total": 8, // 2^2 + 3^1 + 1^0 = 4+3+1 = 8
+			},
+		},
+		{
+			name: "edge case - no tests",
+			resources: &Resources{
+				Pipelines: []*Pipeline{
+					{
+						NamespaceName: "test-namespace",
+						Resolvers: []*PipelineResolver{
+							{
+								Name: "resolver_no_tests",
+								Steps: []*PipelineStep{
+									{
+										Name: "step1",
+										Operation: PipelineStepOperation{
+											Test: "",
+										},
+									},
+									{
+										Name: "step2",
+										Operation: PipelineStepOperation{
+											Test: "",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedMetrics: map[string]float64{
+				"pipelines_total":                         1,
+				"pipeline_resolvers_total":                1,
+				"pipeline_resolver_steps_total":           2,
+				"pipeline_resolver_execution_paths_total": 1, // 2^0 = 1 (no tests)
+			},
+		},
+		{
+			name: "edge case - no steps",
+			resources: &Resources{
+				Pipelines: []*Pipeline{
+					{
+						NamespaceName: "test-namespace",
+						Resolvers: []*PipelineResolver{
+							{
+								Name:  "resolver_no_steps",
+								Steps: []*PipelineStep{},
+							},
+						},
+					},
+				},
+			},
+			expectedMetrics: map[string]float64{
+				"pipelines_total":                         1,
+				"pipeline_resolvers_total":                1,
+				"pipeline_resolver_steps_total":           0,
+				"pipeline_resolver_execution_paths_total": 1, // 0^0 = 1 (by math.Pow definition)
+			},
+		},
+		{
+			name: "complex calculation - all steps have tests",
+			resources: &Resources{
+				Pipelines: []*Pipeline{
+					{
+						NamespaceName: "test-namespace",
+						Resolvers: []*PipelineResolver{
+							{
+								Name: "complex_resolver",
+								Steps: []*PipelineStep{
+									{
+										Name: "step1",
+										Operation: PipelineStepOperation{
+											Test: "validation_test",
+										},
+									},
+									{
+										Name: "step2",
+										Operation: PipelineStepOperation{
+											Test: "integration_test",
+										},
+									},
+									{
+										Name: "step3",
+										Operation: PipelineStepOperation{
+											Test: "unit_test",
+										},
+									},
+									{
+										Name: "step4",
+										Operation: PipelineStepOperation{
+											Test: "e2e_test",
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedMetrics: map[string]float64{
+				"pipelines_total":                         1,
+				"pipeline_resolvers_total":                1,
+				"pipeline_resolver_steps_total":           4,
+				"pipeline_resolver_execution_paths_total": 256, // 4^4 = 256 (4 steps, 4 tests)
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfg := createTestConfig(t)
+			client, err := New(cfg)
+			if err != nil {
+				t.Fatalf("Failed to create client: %v", err)
+			}
+
+			metrics, err := client.Metrics(tt.resources)
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+
+			// Create a map for easier assertion
+			metricMap := make(map[string]float64)
+			for _, m := range metrics {
+				metricMap[m.Name] = m.Value
+			}
+
+			// Verify expected metrics
+			for expectedName, expectedValue := range tt.expectedMetrics {
+				actualValue, exists := metricMap[expectedName]
+				if !exists {
+					t.Errorf("Expected metric %s not found", expectedName)
+					continue
+				}
+				if actualValue != expectedValue {
+					t.Errorf("Metric %s: expected %.0f, got %.0f", expectedName, expectedValue, actualValue)
+				}
+			}
+		})
+	}
+}
+
+func TestClient_Metrics_ExecutionPaths_EdgeCases(t *testing.T) {
+	cfg := createTestConfig(t)
+	client, err := New(cfg)
+	if err != nil {
+		t.Fatalf("Failed to create client: %v", err)
+	}
+
+	t.Run("mixed test scenarios", func(t *testing.T) {
+		resources := &Resources{
+			Pipelines: []*Pipeline{
+				{
+					NamespaceName: "mixed-namespace",
+					Resolvers: []*PipelineResolver{
+						{
+							Name: "mixed_resolver",
+							Steps: []*PipelineStep{
+								{
+									Name: "step_with_test",
+									Operation: PipelineStepOperation{
+										Test: "some test",
+									},
+								},
+								{
+									Name: "step_without_test",
+									Operation: PipelineStepOperation{
+										Test: "",
+									},
+								},
+								{
+									Name: "step_with_whitespace_test",
+									Operation: PipelineStepOperation{
+										Test: "   ", // whitespace only should count as non-empty
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		metrics, err := client.Metrics(resources)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+
+		metricMap := make(map[string]float64)
+		for _, m := range metrics {
+			metricMap[m.Name] = m.Value
+		}
+
+		// Expected: 3 steps, 2 tests (one empty string doesn't count, whitespace does count)
+		expectedExecutionPaths := float64(9) // 3^2 = 9
+		if metricMap["pipeline_resolver_execution_paths_total"] != expectedExecutionPaths {
+			t.Errorf("Expected execution paths to be %.0f, got %.0f",
+				expectedExecutionPaths, metricMap["pipeline_resolver_execution_paths_total"])
+		}
+	})
+
+	t.Run("boundary case - single step with test", func(t *testing.T) {
+		resources := &Resources{
+			Pipelines: []*Pipeline{
+				{
+					NamespaceName: "boundary-namespace",
+					Resolvers: []*PipelineResolver{
+						{
+							Name: "single_step_resolver",
+							Steps: []*PipelineStep{
+								{
+									Name: "only_step",
+									Operation: PipelineStepOperation{
+										Test: "single_test",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+
+		metrics, err := client.Metrics(resources)
+		if err != nil {
+			t.Fatalf("Unexpected error: %v", err)
+		}
+
+		metricMap := make(map[string]float64)
+		for _, m := range metrics {
+			metricMap[m.Name] = m.Value
+		}
+
+		// Expected: 1 step, 1 test -> 1^1 = 1
+		expectedExecutionPaths := float64(1)
+		if metricMap["pipeline_resolver_execution_paths_total"] != expectedExecutionPaths {
+			t.Errorf("Expected execution paths to be %.0f, got %.0f",
+				expectedExecutionPaths, metricMap["pipeline_resolver_execution_paths_total"])
+		}
+	})
 }

@@ -80,6 +80,26 @@ patterner metrics
 
 The metrics command outputs detailed JSON data about your workspace resources.
 
+#### Available Metrics
+
+The following metrics are collected and displayed:
+
+**Pipeline Metrics:**
+- `pipelines_total` - Total number of pipelines
+- `pipeline_resolvers_total` - Total number of pipeline resolvers
+- `pipeline_resolver_steps_total` - Total number of pipeline resolver steps
+- `pipeline_resolver_execution_paths_total` - Total number of pipeline resolver execution paths
+  - Calculated based on the number of steps and tests in each resolver (steps^tests)
+  - Used to understand the total number of execution paths based on testable step combinations
+
+**TailorDB Metrics:**
+- `tailordbs_total` - Total number of TailorDBs
+- `tailordb_types_total` - Total number of TailorDB types
+- `tailordb_type_fields_total` - Total number of TailorDB type fields
+
+**StateFlow Metrics:**
+- `stateflows_total` - Total number of StateFlows
+
 ## Configuration
 
 Patterner uses a `.patterner.yml` file for configuration. The configuration includes various lint rules for different Tailor Platform components:
