@@ -34,7 +34,7 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 					testsCount++
 				}
 			}
-			executionPathsTotal += int(math.Pow(float64(len(r.Steps)), float64(testsCount)))
+			executionPathsTotal += len(r.Steps) * int(math.Pow(2, float64(testsCount)))
 		}
 	}
 	metrics = append(metrics, Metric{
