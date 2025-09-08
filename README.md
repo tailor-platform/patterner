@@ -67,6 +67,9 @@ lint:
   pipeline:
     deprecatedFeature:
       enabled: true
+      allowCELScript: false
+      allowDraft: false
+      allowStateFlow: false
     insecureAuthorization:
       enabled: false
     stepLength:
@@ -76,11 +79,11 @@ lint:
       enabled: true
     queryBeforeMutation:
       enabled: true
-    legacyScript:
-      enabled: true
   tailordb:
     deprecatedFeature:
       enabled: true
+      allowDraft: false
+      allowCELHooks: false
     legacyPermission:
       enabled: true
   stateflow:
@@ -91,24 +94,32 @@ lint:
 ### Lint Rules
 
 #### Pipeline Rules
-- **deprecatedFeature** - Check for deprecated features in pipelines
+- **deprecatedFeature** - Identify deprecated features including legacy script/validation patterns and recommend modern alternatives
+  - `enabled` (default: true) - Enable/disable deprecated feature detection
+  - `allowCELScript` (default: false) - Allow CEL script usage in pipelines
+  - `allowDraft` (default: false) - Allow draft resources in pipeline configurations
+  - `allowStateFlow` (default: false) - Allow StateFlow resources in pipeline configurations
+  - Detects legacy script patterns (`pre_validation`, `pre_script`, `post_script`, `post_validation`) and recommends modern hook alternatives (`pre_hook`, `post_hook`)
+  - Enabled by default to promote migration away from deprecated features
 - **insecureAuthorization** - Detect insecure authorization patterns
 - **stepLength** - Ensure pipeline steps don't exceed maximum length
 - **multipleMutations** - Identify multiple mutations in a single operation
 - **queryBeforeMutation** - Check for queries before mutations
-- **legacyScript** - Identify legacy script/validation patterns and recommend modern hook alternatives
-  - Detects `pre_validation` and recommends `pre_hook`
-  - Detects `pre_script` and recommends `pre_hook`
-  - Detects `post_script` and recommends `post_hook`
-  - Detects `post_validation` and recommends `post_hook`
-  - Enabled by default to promote migration to modern hook patterns
 
 #### TailorDB Rules
-- **deprecatedFeature** - Check for deprecated TailorDB features
+- **deprecatedFeature** - Identify deprecated TailorDB features and promote modern alternatives
+  - `enabled` (default: true) - Enable/disable deprecated feature detection
+  - `allowDraft` (default: false) - Allow draft resources in TailorDB configurations
+  - `allowCELHooks` (default: false) - Allow CEL hook usage in TailorDB configurations
+  - Detects deprecated patterns and recommends modern TailorDB alternatives
+  - Enabled by default to promote migration away from deprecated features
 - **legacyPermission** - Identify legacy permission patterns
 
-#### Stateflow Rules
-- **deprecatedFeature** - Check for deprecated Stateflow features
+#### StateFlow Rules
+- **deprecatedFeature** - Identify deprecated StateFlow features and promote modern alternatives
+  - `enabled` (default: true) - Enable/disable deprecated feature detection
+  - Detects deprecated StateFlow patterns and recommends modern alternatives
+  - Enabled by default to promote migration away from deprecated features
 
 ## Command Reference
 

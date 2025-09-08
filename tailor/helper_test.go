@@ -36,9 +36,7 @@ func createTestConfig(t *testing.T) *config.Config {
 					Enabled:        true,
 					AllowStateFlow: false,
 					AllowDraft:     false,
-				},
-				LegacyScript: config.LegacyScript{
-					Enabled: true,
+					AllowCELScript: false,
 				},
 				MultipleMutations: config.MultipleMutations{
 					Enabled: true,

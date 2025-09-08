@@ -284,7 +284,8 @@ func TestClient_Lint_Pipeline(t *testing.T) {
 		{
 			name: "legacy script warnings",
 			configMod: func(c *config.Config) {
-				c.Lint.Pipeline.LegacyScript.Enabled = true
+				c.Lint.Pipeline.DeprecatedFeature.Enabled = true
+				c.Lint.Pipeline.DeprecatedFeature.AllowCELScript = false
 			},
 			resources: &Resources{
 				Pipelines: []*Pipeline{
@@ -308,10 +309,10 @@ func TestClient_Lint_Pipeline(t *testing.T) {
 				},
 			},
 			expectedMsgs: []string{
-				"`pre_validation` is not recommended. Use `pre_hook` instead.",
-				"`pre_script` is not recommended. Use `pre_hook` instead.",
-				"`post_script` is not recommended. Use `post_hook` instead.",
-				"`post_validation` is not recommended. Use `post_hook` instead.",
+				"`pre_validation` is deprecated. Use `pre_hook` instead.",
+				"`pre_script` is deprecated. Use `pre_hook` instead.",
+				"`post_script` is deprecated. Use `post_hook` instead.",
+				"`post_validation` is deprecated. Use `post_hook` instead.",
 			},
 		},
 		{
