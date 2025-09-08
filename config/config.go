@@ -106,7 +106,7 @@ func Load() (*Config, error) {
 		if !os.IsNotExist(err) {
 			return nil, err
 		}
-		wd := filepath.Dir(wd)
+		wd = filepath.Dir(wd)
 		if wd == "/" || wd == "." {
 			break
 		}
