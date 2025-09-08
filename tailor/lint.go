@@ -142,33 +142,33 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 						}
 					}
 				}
-				if c.cfg.Lint.Pipeline.LegacyScript.Enabled {
+				if c.cfg.Lint.Pipeline.DeprecatedFeature.Enabled && !c.cfg.Lint.Pipeline.DeprecatedFeature.AllowCELScript {
 					if s.PreValidation != "" {
 						warns = append(warns, &LintWarn{
 							Type:    LintTargetTypePipeline,
 							Name:    fmt.Sprintf("%s/%s step %s", p.NamespaceName, r.Name, s.Name),
-							Message: "`pre_validation` is not recommended. Use `pre_hook` instead.",
+							Message: "`pre_validation` is deprecated. Use `pre_hook` instead.",
 						})
 					}
 					if s.PreScript != "" {
 						warns = append(warns, &LintWarn{
 							Type:    LintTargetTypePipeline,
 							Name:    fmt.Sprintf("%s/%s step %s", p.NamespaceName, r.Name, s.Name),
-							Message: "`pre_script` is not recommended. Use `pre_hook` instead.",
+							Message: "`pre_script` is deprecated. Use `pre_hook` instead.",
 						})
 					}
 					if s.PostScript != "" {
 						warns = append(warns, &LintWarn{
 							Type:    LintTargetTypePipeline,
 							Name:    fmt.Sprintf("%s/%s step %s", p.NamespaceName, r.Name, s.Name),
-							Message: "`post_script` is not recommended. Use `post_hook` instead.",
+							Message: "`post_script` is deprecated. Use `post_hook` instead.",
 						})
 					}
 					if s.PostValidation != "" {
 						warns = append(warns, &LintWarn{
 							Type:    LintTargetTypePipeline,
 							Name:    fmt.Sprintf("%s/%s step %s", p.NamespaceName, r.Name, s.Name),
-							Message: "`post_validation` is not recommended. Use `post_hook` instead.",
+							Message: "`post_validation` is deprecated. Use `post_hook` instead.",
 						})
 					}
 				}

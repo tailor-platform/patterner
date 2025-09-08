@@ -25,13 +25,13 @@ type Pipeline struct {
 	StepLength            StepLength                `yaml:"stepLength,omitempty,omitzero"`
 	MultipleMutations     MultipleMutations         `yaml:"multipleMutations,omitempty,omitzero"`
 	QueryBeforeMutation   QueryBeforeMutation       `yaml:"queryBeforeMutation,omitempty,omitzero"`
-	LegacyScript          LegacyScript              `yaml:"legacyScript,omitempty,omitzero"`
 }
 
 type PipelineDeprecatedFeature struct {
 	Enabled        bool `default:"true" yaml:"enabled,omitempty"`
 	AllowDraft     bool `default:"false" yaml:"allowDraft,omitempty"`
 	AllowStateFlow bool `default:"false" yaml:"allowStateFlow,omitempty"`
+	AllowCELScript bool `default:"false" yaml:"allowCELScript,omitempty"`
 }
 
 type InsecureAuthorization struct {
@@ -48,10 +48,6 @@ type MultipleMutations struct {
 }
 
 type QueryBeforeMutation struct {
-	Enabled bool `default:"true" yaml:"enabled,omitempty"`
-}
-
-type LegacyScript struct {
 	Enabled bool `default:"true" yaml:"enabled,omitempty"`
 }
 
