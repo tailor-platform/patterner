@@ -48,11 +48,33 @@ Or specify a workspace ID directly:
 patterner lint -w YOUR_WORKSPACE_ID
 ```
 
+**Note:** The lint command requires a Tailor Platform access token. Set the `TAILOR_TOKEN` environment variable:
+
+```bash
+# Using tailorctl to get access token
+env TAILOR_TOKEN=$(tailorctl auth get accessToken) patterner lint
+
+# Or set the token directly
+export TAILOR_TOKEN=your_access_token
+patterner lint
+```
+
 ### View Metrics
 
 Display metrics about resources in your workspace:
 
 ```bash
+patterner metrics
+```
+
+**Note:** The metrics command requires a Tailor Platform access token. Set the `TAILOR_TOKEN` environment variable:
+
+```bash
+# Using tailorctl to get access token
+env TAILOR_TOKEN=$(tailorctl auth get accessToken) patterner metrics
+
+# Or set the token directly
+export TAILOR_TOKEN=your_access_token
 patterner metrics
 ```
 
