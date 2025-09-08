@@ -1,5 +1,7 @@
 package tailor
 
+import "math"
+
 const (
 	pageSize = 100
 )
@@ -21,10 +23,18 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 	})
 	resolversTotal := 0
 	stepsTotal := 0
+	executionPathsTotal := 0
 	for _, p := range resources.Pipelines {
 		resolversTotal += len(p.Resolvers)
 		for _, r := range p.Resolvers {
+			testsCount := 0
 			stepsTotal += len(r.Steps)
+			for _, s := range r.Steps {
+				if s.Operation.Test != "" {
+					testsCount++
+				}
+			}
+			executionPathsTotal += int(math.Pow(float64(len(r.Steps)), float64(testsCount)))
 		}
 	}
 	metrics = append(metrics, Metric{
@@ -36,6 +46,11 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 		Name:        "pipeline_resolver_steps_total",
 		Description: "Total number of pipeline resolver steps",
 		Value:       float64(stepsTotal),
+	})
+	metrics = append(metrics, Metric{
+		Name:        "pipeline_resolver_execution_paths_total",
+		Description: "Total number of pipeline resolver execution paths",
+		Value:       float64(executionPathsTotal),
 	})
 
 	// TailorDB Metrics

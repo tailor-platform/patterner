@@ -53,6 +53,7 @@ type PipelineStepOperation struct {
 	Name    string
 	Invoker *tailorv1.AuthInvoker
 	Source  string
+	Test    string
 }
 
 type TailorDB struct { //nolint:revive
@@ -184,6 +185,7 @@ func (c *Client) Resources(ctx context.Context) (*Resources, error) {
 										Name:    p.GetOperationName(),
 										Invoker: p.GetInvoker(),
 										Source:  p.GetOperationSource(),
+										Test:    p.GetTest(),
 									},
 								}
 								resolver.Steps = append(resolver.Steps, step)
