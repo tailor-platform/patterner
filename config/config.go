@@ -53,17 +53,12 @@ type QueryBeforeMutation struct {
 
 type TailorDB struct {
 	DeprecatedFeature TailorDBDeprecatedFeature `yaml:"deprecatedFeature,omitempty,omitzero"`
-	LegacyPermission  LegacyPermission          `yaml:"legacyPermission,omitempty,omitzero"`
 }
 
 type TailorDBDeprecatedFeature struct {
-	Enabled       bool `default:"true" yaml:"enabled,omitempty"`
-	AllowDraft    bool `default:"false" yaml:"allowDraft,omitempty"`
-	AllowCELHooks bool `default:"false" yaml:"allowCELHooks,omitempty"`
-}
-
-type LegacyPermission struct {
 	Enabled               bool `default:"true" yaml:"enabled,omitempty"`
+	AllowDraft            bool `default:"false" yaml:"allowDraft,omitempty"`
+	AllowCELHooks         bool `default:"false" yaml:"allowCELHooks,omitempty"`
 	AllowTypePermission   bool `default:"false" yaml:"allowTypePermission,omitempty"`
 	AllowRecordPermission bool `default:"false" yaml:"allowRecordPermission,omitempty"`
 }

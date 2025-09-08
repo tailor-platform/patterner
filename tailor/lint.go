@@ -44,21 +44,18 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 						Message: "Draft feature is deprecated",
 					})
 				}
-			}
-
-			if c.cfg.Lint.TailorDB.LegacyPermission.Enabled {
-				if !c.cfg.Lint.TailorDB.LegacyPermission.AllowTypePermission && t.TypePermission != nil {
+				if !c.cfg.Lint.TailorDB.DeprecatedFeature.AllowTypePermission && t.TypePermission != nil {
 					warns = append(warns, &LintWarn{
 						Type:    LintTargetTypeTailorDB,
 						Name:    fmt.Sprintf("%s/%s", db.NamespaceName, t.Name),
-						Message: "Type-level permission is legacy. Use `Permission` or `GQLPermission` instead",
+						Message: "Type-level permission is deprecated. Use `Permission` or `GQLPermission` instead",
 					})
 				}
-				if !c.cfg.Lint.TailorDB.LegacyPermission.AllowRecordPermission && t.RecordPermission != nil {
+				if !c.cfg.Lint.TailorDB.DeprecatedFeature.AllowRecordPermission && t.RecordPermission != nil {
 					warns = append(warns, &LintWarn{
 						Type:    LintTargetTypeTailorDB,
 						Name:    fmt.Sprintf("%s/%s", db.NamespaceName, t.Name),
-						Message: "Record-level permission is legacy. Use `Permission` or `GQLPermission` instead",
+						Message: "Record-level permission is deprecated. Use `Permission` or `GQLPermission` instead",
 					})
 				}
 			}

@@ -85,6 +85,7 @@ The metrics command outputs detailed JSON data about your workspace resources.
 Patterner uses a `.patterner.yml` file for configuration. The configuration includes various lint rules for different Tailor Platform components:
 
 ```yaml
+workspaceID: xxxxxxxXXxxxxxxxxxxxxx
 lint:
   pipeline:
     deprecatedFeature:
@@ -106,8 +107,6 @@ lint:
       enabled: true
       allowDraft: false
       allowCELHooks: false
-    legacyPermission:
-      enabled: true
   stateflow:
     deprecatedFeature:
       enabled: true
@@ -116,12 +115,13 @@ lint:
 ### Lint Rules
 
 #### Pipeline Rules
-- **deprecatedFeature** - Identify deprecated features including legacy script/validation patterns and recommend modern alternatives
+- **deprecatedFeature** - Identify deprecated features and promote modern alternatives
   - `enabled` (default: true) - Enable/disable deprecated feature detection
   - `allowCELScript` (default: false) - Allow CEL script usage in pipelines
   - `allowDraft` (default: false) - Allow draft resources in pipeline configurations
   - `allowStateFlow` (default: false) - Allow StateFlow resources in pipeline configurations
-  - Detects legacy script patterns (`pre_validation`, `pre_script`, `post_script`, `post_validation`) and recommends modern hook alternatives (`pre_hook`, `post_hook`)
+  - Detects deprecated patterns and recommends modern Pipeline alternatives
+      - https://docs.tailor.tech/reference/service-lifecycle-policy
   - Enabled by default to promote migration away from deprecated features
 - **insecureAuthorization** - Detect insecure authorization patterns
 - **stepLength** - Ensure pipeline steps don't exceed maximum length
@@ -134,13 +134,14 @@ lint:
   - `allowDraft` (default: false) - Allow draft resources in TailorDB configurations
   - `allowCELHooks` (default: false) - Allow CEL hook usage in TailorDB configurations
   - Detects deprecated patterns and recommends modern TailorDB alternatives
+      - https://docs.tailor.tech/reference/service-lifecycle-policy
   - Enabled by default to promote migration away from deprecated features
-- **legacyPermission** - Identify legacy permission patterns
 
 #### StateFlow Rules
 - **deprecatedFeature** - Identify deprecated StateFlow features and promote modern alternatives
   - `enabled` (default: true) - Enable/disable deprecated feature detection
   - Detects deprecated StateFlow patterns and recommends modern alternatives
+      - https://docs.tailor.tech/reference/service-lifecycle-policy
   - Enabled by default to promote migration away from deprecated features
 
 ## Command Reference

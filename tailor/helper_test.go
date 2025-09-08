@@ -14,12 +14,9 @@ func createTestConfig(t *testing.T) *config.Config {
 		Lint: config.Lint{
 			TailorDB: config.TailorDB{
 				DeprecatedFeature: config.TailorDBDeprecatedFeature{
-					Enabled:       true,
-					AllowDraft:    false,
-					AllowCELHooks: false,
-				},
-				LegacyPermission: config.LegacyPermission{
 					Enabled:               true,
+					AllowDraft:            false,
+					AllowCELHooks:         false,
 					AllowTypePermission:   false,
 					AllowRecordPermission: false,
 				},
