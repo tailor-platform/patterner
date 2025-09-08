@@ -12,39 +12,41 @@ func createTestConfig(t *testing.T) *config.Config {
 	return &config.Config{
 		WorkspaceID: "test-workspace-id",
 		Lint: config.Lint{
-			TailorDB: config.TailorDB{
-				DeprecatedFeature: config.TailorDBDeprecatedFeature{
-					Enabled:               true,
-					AllowDraft:            false,
-					AllowCELHooks:         false,
-					AllowTypePermission:   false,
-					AllowRecordPermission: false,
+			Rules: config.Rules{
+				TailorDB: config.TailorDB{
+					DeprecatedFeature: config.TailorDBDeprecatedFeature{
+						Enabled:               true,
+						AllowDraft:            false,
+						AllowCELHooks:         false,
+						AllowTypePermission:   false,
+						AllowRecordPermission: false,
+					},
 				},
-			},
-			Pipeline: config.Pipeline{
-				InsecureAuthorization: config.InsecureAuthorization{
-					Enabled: true,
+				Pipeline: config.Pipeline{
+					InsecureAuthorization: config.InsecureAuthorization{
+						Enabled: true,
+					},
+					StepLength: config.StepLength{
+						Enabled: true,
+						Max:     10,
+					},
+					DeprecatedFeature: config.PipelineDeprecatedFeature{
+						Enabled:        true,
+						AllowStateFlow: false,
+						AllowDraft:     false,
+						AllowCELScript: false,
+					},
+					MultipleMutations: config.MultipleMutations{
+						Enabled: true,
+					},
+					QueryBeforeMutation: config.QueryBeforeMutation{
+						Enabled: true,
+					},
 				},
-				StepLength: config.StepLength{
-					Enabled: true,
-					Max:     10,
-				},
-				DeprecatedFeature: config.PipelineDeprecatedFeature{
-					Enabled:        true,
-					AllowStateFlow: false,
-					AllowDraft:     false,
-					AllowCELScript: false,
-				},
-				MultipleMutations: config.MultipleMutations{
-					Enabled: true,
-				},
-				QueryBeforeMutation: config.QueryBeforeMutation{
-					Enabled: true,
-				},
-			},
-			StateFlow: config.StateFlow{
-				DeprecatedFeature: config.StateFlowDeprecatedFeature{
-					Enabled: true,
+				StateFlow: config.StateFlow{
+					DeprecatedFeature: config.StateFlowDeprecatedFeature{
+						Enabled: true,
+					},
 				},
 			},
 		},

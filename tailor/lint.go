@@ -36,22 +36,22 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 		for _, t := range db.Types {
 			typeNames = append(typeNames, t.Name)
 
-			if c.cfg.Lint.TailorDB.DeprecatedFeature.Enabled {
-				if !c.cfg.Lint.TailorDB.DeprecatedFeature.AllowDraft && t.Draft {
+			if c.cfg.Lint.Rules.TailorDB.DeprecatedFeature.Enabled {
+				if !c.cfg.Lint.Rules.TailorDB.DeprecatedFeature.AllowDraft && t.Draft {
 					warns = append(warns, &LintWarn{
 						Type:    LintTargetTypeTailorDB,
 						Name:    fmt.Sprintf("%s/%s", db.NamespaceName, t.Name),
 						Message: "Draft feature is deprecated",
 					})
 				}
-				if !c.cfg.Lint.TailorDB.DeprecatedFeature.AllowTypePermission && t.TypePermission != nil {
+				if !c.cfg.Lint.Rules.TailorDB.DeprecatedFeature.AllowTypePermission && t.TypePermission != nil {
 					warns = append(warns, &LintWarn{
 						Type:    LintTargetTypeTailorDB,
 						Name:    fmt.Sprintf("%s/%s", db.NamespaceName, t.Name),
 						Message: "Type-level permission is deprecated. Use `Permission` or `GQLPermission` instead",
 					})
 				}
-				if !c.cfg.Lint.TailorDB.DeprecatedFeature.AllowRecordPermission && t.RecordPermission != nil {
+				if !c.cfg.Lint.Rules.TailorDB.DeprecatedFeature.AllowRecordPermission && t.RecordPermission != nil {
 					warns = append(warns, &LintWarn{
 						Type:    LintTargetTypeTailorDB,
 						Name:    fmt.Sprintf("%s/%s", db.NamespaceName, t.Name),
@@ -60,7 +60,7 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 				}
 			}
 
-			if c.cfg.Lint.TailorDB.DeprecatedFeature.Enabled && !c.cfg.Lint.TailorDB.DeprecatedFeature.AllowCELHooks {
+			if c.cfg.Lint.Rules.TailorDB.DeprecatedFeature.Enabled && !c.cfg.Lint.Rules.TailorDB.DeprecatedFeature.AllowCELHooks {
 				for _, f := range t.Fields {
 					if f.Hooks.CreateExpr != "" || f.Hooks.UpdateExpr != "" {
 						warns = append(warns, &LintWarn{
@@ -78,7 +78,7 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 	for _, p := range resources.Pipelines {
 		for _, r := range p.Resolvers {
 			// Pipeline/InsecureAuthorization
-			if c.cfg.Lint.Pipeline.InsecureAuthorization.Enabled && (r.Authorization == "true" || r.Authorization == "true==true") {
+			if c.cfg.Lint.Rules.Pipeline.InsecureAuthorization.Enabled && (r.Authorization == "true" || r.Authorization == "true==true") {
 				warns = append(warns, &LintWarn{
 					Type:    LintTargetTypePipeline,
 					Name:    fmt.Sprintf("%s/%s", p.NamespaceName, r.Name),
@@ -88,11 +88,11 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 
 			stepLength := len(r.Steps)
 			// Pipeline/StepLength
-			if c.cfg.Lint.Pipeline.StepLength.Enabled && stepLength > c.cfg.Lint.Pipeline.StepLength.Max {
+			if c.cfg.Lint.Rules.Pipeline.StepLength.Enabled && stepLength > c.cfg.Lint.Rules.Pipeline.StepLength.Max {
 				warns = append(warns, &LintWarn{
 					Type:    LintTargetTypePipeline,
 					Name:    fmt.Sprintf("%s/%s", p.NamespaceName, r.Name),
-					Message: fmt.Sprintf("resolver has too many steps (%d > %d)", stepLength, c.cfg.Lint.Pipeline.StepLength.Max),
+					Message: fmt.Sprintf("resolver has too many steps (%d > %d)", stepLength, c.cfg.Lint.Rules.Pipeline.StepLength.Max),
 				})
 			}
 
@@ -110,9 +110,9 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 						for _, selection := range op.SelectionSet {
 							switch sel := selection.(type) {
 							case *ast.Field:
-								if c.cfg.Lint.Pipeline.DeprecatedFeature.Enabled {
+								if c.cfg.Lint.Rules.Pipeline.DeprecatedFeature.Enabled {
 									// StateFlow
-									if !c.cfg.Lint.Pipeline.DeprecatedFeature.AllowStateFlow {
+									if !c.cfg.Lint.Rules.Pipeline.DeprecatedFeature.AllowStateFlow {
 										if slices.Contains(stateFlowMutations, sel.Name) {
 											warns = append(warns, &LintWarn{
 												Type:    LintTargetTypePipeline,
@@ -123,7 +123,7 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 									}
 
 									// Draft
-									if !c.cfg.Lint.Pipeline.DeprecatedFeature.AllowDraft {
+									if !c.cfg.Lint.Rules.Pipeline.DeprecatedFeature.AllowDraft {
 										if replaced := draftMutationPrefixRe.ReplaceAllString(sel.Name, ""); replaced != sel.Name {
 											if slices.Contains(typeNames, replaced) {
 												warns = append(warns, &LintWarn{
@@ -139,7 +139,7 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 						}
 					}
 				}
-				if c.cfg.Lint.Pipeline.DeprecatedFeature.Enabled && !c.cfg.Lint.Pipeline.DeprecatedFeature.AllowCELScript {
+				if c.cfg.Lint.Rules.Pipeline.DeprecatedFeature.Enabled && !c.cfg.Lint.Rules.Pipeline.DeprecatedFeature.AllowCELScript {
 					if s.PreValidation != "" {
 						warns = append(warns, &LintWarn{
 							Type:    LintTargetTypePipeline,
@@ -170,7 +170,7 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 					}
 				}
 			}
-			if c.cfg.Lint.Pipeline.MultipleMutations.Enabled {
+			if c.cfg.Lint.Rules.Pipeline.MultipleMutations.Enabled {
 				var count int
 				for _, op := range operations {
 					if op == "mutation" {
@@ -185,7 +185,7 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 					})
 				}
 			}
-			if c.cfg.Lint.Pipeline.QueryBeforeMutation.Enabled {
+			if c.cfg.Lint.Rules.Pipeline.QueryBeforeMutation.Enabled {
 				if slices.Contains(operations, "mutation") && slices.Contains(operations, "query") && slices.Index(operations, "mutation") > slices.Index(operations, "query") {
 					warns = append(warns, &LintWarn{
 						Type:    LintTargetTypePipeline,
@@ -198,9 +198,9 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 	}
 
 	// StateFlow Linting
-	if c.cfg.Lint.StateFlow.DeprecatedFeature.Enabled {
+	if c.cfg.Lint.Rules.StateFlow.DeprecatedFeature.Enabled {
 		for _, sf := range resources.StateFlows {
-			if !c.cfg.Lint.StateFlow.DeprecatedFeature.Enabled {
+			if !c.cfg.Lint.Rules.StateFlow.DeprecatedFeature.Enabled {
 				continue
 			}
 			warns = append(warns, &LintWarn{

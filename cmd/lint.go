@@ -22,7 +22,6 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -58,8 +57,11 @@ var lintCmd = &cobra.Command{
 		for _, w := range warns {
 			fmt.Printf("[%s] %s: %s\n", w.Type, w.Name, w.Message)
 		}
-		if len(warns) > 0 {
-			return errors.New("lint warnings found")
+		if len(warns) > cfg.Lint.Acceptable {
+			if cfg.Lint.Acceptable == 0 {
+				return fmt.Errorf("%d warnings found", len(warns))
+			}
+			return fmt.Errorf("%d warnings found, which exceeds the acceptable number of %d", len(warns), cfg.Lint.Acceptable)
 		}
 		return nil
 	},
