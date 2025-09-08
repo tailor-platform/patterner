@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.3.1](https://github.com/tailor-platform/patterner/compare/v0.3.0...v0.3.1) - 2025-09-08
+### Fix bug 🐛
+- fix: correct assignment of working directory path by @k1LoW in https://github.com/tailor-platform/patterner/pull/9
+- fix: correct calculation of execution paths total by @k1LoW in https://github.com/tailor-platform/patterner/pull/11
+
 ## [v0.3.0](https://github.com/tailor-platform/patterner/compare/v0.2.0...v0.3.0) - 2025-09-08
 ### New Features 🎉
 - feat: add configurable acceptable warning threshold by @k1LoW in https://github.com/tailor-platform/patterner/pull/7
