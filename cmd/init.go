@@ -30,7 +30,6 @@ import (
 	"github.com/tailor-platform/patterner/config"
 )
 
-// initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "initialize config file",
@@ -51,7 +50,7 @@ var initCmd = &cobra.Command{
 			return errors.New("config file already exists")
 		}
 
-		if err := os.WriteFile(config.Filename, b, 0644); err != nil {
+		if err := os.WriteFile(config.Filename, b, 0600); err != nil {
 			return err
 		}
 		return nil

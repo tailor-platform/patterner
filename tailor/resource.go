@@ -55,12 +55,12 @@ type PipelineStepOperation struct {
 	Source  string
 }
 
-type TailorDB struct {
+type TailorDB struct { //nolint:revive
 	NamespaceName string
 	Types         []*TailorDBType
 }
 
-type TailorDBType struct {
+type TailorDBType struct { //nolint:revive
 	Name          string
 	Description   string
 	Fields        []*TailorDBField
@@ -73,7 +73,7 @@ type TailorDBType struct {
 	Draft bool
 }
 
-type TailorDBField struct {
+type TailorDBField struct { //nolint:revive
 	Name        string
 	Type        string
 	Description string
@@ -85,26 +85,26 @@ type TailorDBField struct {
 	ForeignKey  bool
 	Vector      bool
 	SourceID    *string
-	Hooks       Hooks
+	Hooks       TailorDBFieldHooks
 }
 
-type Hooks struct {
+type TailorDBFieldHooks struct { //nolint:revive
 	Create     string
 	Update     string
 	CreateExpr string
 	UpdateExpr string
 }
 
-type TailorDBPermission struct {
+type TailorDBPermission struct { //nolint:revive
 }
 
-type TailorDBGQLPermission struct {
+type TailorDBGQLPermission struct { //nolint:revive
 }
 
-type TailorDBTypePermission struct {
+type TailorDBTypePermission struct { //nolint:revive
 }
 
-type TailorDBRecordPermission struct {
+type TailorDBRecordPermission struct { //nolint:revive
 }
 
 type StateFlow struct {
@@ -318,8 +318,7 @@ func (c *Client) Resources(ctx context.Context) (*Resources, error) {
 	return resources, nil
 }
 
-// convertTailorDBFields converts proto FieldConfig map to TailorDBField slice
-// It handles recursive field structures and preserves all field properties from protobuf
+// convertTailorDBFields converts proto FieldConfig map to TailorDBField slice.
 func convertTailorDBFields(fields map[string]*tailorv1.TailorDBType_FieldConfig) []*TailorDBField {
 	if fields == nil {
 		return nil
@@ -350,7 +349,7 @@ func convertTailorDBFields(fields map[string]*tailorv1.TailorDBType_FieldConfig)
 			Unique:      config.GetUnique(),
 			ForeignKey:  config.GetForeignKey(),
 			Vector:      config.GetVector(),
-			Hooks: Hooks{
+			Hooks: TailorDBFieldHooks{
 				Create:     config.GetHooks().GetCreate().GetExpr(),
 				Update:     config.GetHooks().GetUpdate().GetExpr(),
 				CreateExpr: config.GetHooks().GetCreateExpr(),

@@ -30,7 +30,6 @@ import (
 	"github.com/tailor-platform/patterner/tailor"
 )
 
-// metricsCmd represents the metrics command
 var metricsCmd = &cobra.Command{
 	Use:   "metrics",
 	Short: "retrieve and display metrics about the resources in the workspace",

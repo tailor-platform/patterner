@@ -30,7 +30,6 @@ import (
 	"github.com/tailor-platform/patterner/tailor"
 )
 
-// lintCmd represents the lint command
 var lintCmd = &cobra.Command{
 	Use:   "lint",
 	Short: "lint the resources in the workspace",

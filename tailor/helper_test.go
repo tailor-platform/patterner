@@ -6,7 +6,7 @@ import (
 	"github.com/tailor-platform/patterner/config"
 )
 
-// createTestConfig creates a test configuration with default settings
+// createTestConfig creates a test configuration with default settings.
 func createTestConfig(t *testing.T) *config.Config {
 	t.Helper()
 	return &config.Config{
@@ -55,6 +55,3 @@ func createTestConfig(t *testing.T) *config.Config {
 		},
 	}
 }
-
-// NOTE: All CreateResources* functions have been removed as they were unused.
-// Tests directly create Resources using the main tailor package types.

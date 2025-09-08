@@ -208,7 +208,7 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 			}
 			warns = append(warns, &LintWarn{
 				Type:    LintTargetTypeStateFlow,
-				Name:    fmt.Sprintf("%s", sf.NamespaceName),
+				Name:    sf.NamespaceName,
 				Message: "StateFlow is deprecated",
 			})
 		}

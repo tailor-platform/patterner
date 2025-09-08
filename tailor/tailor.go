@@ -22,7 +22,6 @@ func New(cfg *config.Config) (*Client, error) {
 		return nil, errors.New("workspace ID is required")
 	}
 
-	// Set base URL with environment variable override
 	baseURL := "https://api.tailor.tech"
 	if platformURL := os.Getenv("PLATFORM_URL"); platformURL != "" {
 		baseURL = platformURL
@@ -45,7 +44,7 @@ func New(cfg *config.Config) (*Client, error) {
 	}, nil
 }
 
-// bearerTokenTransport implements http.RoundTripper to add Bearer token to requests
+// bearerTokenTransport implements http.RoundTripper to add Bearer token to requests.
 type bearerTokenTransport struct {
 	token string
 	base  http.RoundTripper

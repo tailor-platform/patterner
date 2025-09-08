@@ -47,7 +47,7 @@ func TestClient_Lint(t *testing.T) {
 										Name:     "id",
 										Type:     "ID",
 										Required: true,
-										Hooks: Hooks{
+										Hooks: TailorDBFieldHooks{
 											CreateExpr: "now()",
 											UpdateExpr: "now()",
 										},
@@ -181,7 +181,7 @@ func TestClient_Lint_TailorDB(t *testing.T) {
 								Fields: []*TailorDBField{
 									{
 										Name: "testField",
-										Hooks: Hooks{
+										Hooks: TailorDBFieldHooks{
 											CreateExpr: "now()",
 											UpdateExpr: "now()",
 										},
