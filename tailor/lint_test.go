@@ -126,8 +126,8 @@ func TestClient_Lint_TailorDB(t *testing.T) {
 		{
 			name: "legacy type permission warning",
 			configMod: func(c *config.Config) {
-				c.Lint.TailorDB.LegacyPermission.Enabled = true
-				c.Lint.TailorDB.LegacyPermission.AllowTypePermission = false
+				c.Lint.TailorDB.DeprecatedFeature.Enabled = true
+				c.Lint.TailorDB.DeprecatedFeature.AllowTypePermission = false
 			},
 			resources: &Resources{
 				TailorDBs: []*TailorDB{
@@ -142,13 +142,13 @@ func TestClient_Lint_TailorDB(t *testing.T) {
 					},
 				},
 			},
-			expectedMsgs: []string{"Type-level permission is legacy. Use `Permission` or `GQLPermission` instead"},
+			expectedMsgs: []string{"Type-level permission is deprecated. Use `Permission` or `GQLPermission` instead"},
 		},
 		{
 			name: "legacy record permission warning",
 			configMod: func(c *config.Config) {
-				c.Lint.TailorDB.LegacyPermission.Enabled = true
-				c.Lint.TailorDB.LegacyPermission.AllowRecordPermission = false
+				c.Lint.TailorDB.DeprecatedFeature.Enabled = true
+				c.Lint.TailorDB.DeprecatedFeature.AllowRecordPermission = false
 			},
 			resources: &Resources{
 				TailorDBs: []*TailorDB{
@@ -163,7 +163,7 @@ func TestClient_Lint_TailorDB(t *testing.T) {
 					},
 				},
 			},
-			expectedMsgs: []string{"Record-level permission is legacy. Use `Permission` or `GQLPermission` instead"},
+			expectedMsgs: []string{"Record-level permission is deprecated. Use `Permission` or `GQLPermission` instead"},
 		},
 		{
 			name: "CEL hooks deprecated warning",
