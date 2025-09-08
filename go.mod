@@ -9,7 +9,7 @@ require (
 	github.com/creasty/defaults v1.8.0
 	github.com/goccy/go-yaml v1.18.0
 	github.com/spf13/cobra v1.10.1
-	github.com/vektah/gqlparser v1.3.1
+	github.com/vektah/gqlparser/v2 v2.5.14
 )
 
 require (
