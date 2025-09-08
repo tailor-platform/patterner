@@ -15,6 +15,7 @@ jobs:
       contents: write
       pull-requests: write
       packages: write
+      issues: read
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -28,7 +29,7 @@ jobs:
 
       - id: run-tagpr
         name: Run tagpr
-        uses: Songmu/tagpr@ebb5da0cccdb47c533d4b520ebc0acd475b16614 # v1.7.0
+        uses: Songmu/tagpr@78b178768938c73d4b2c82f67f710ee3693ec582 # v1.8.2
 
   assets:
     needs: tagpr
