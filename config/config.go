@@ -14,6 +14,11 @@ type Config struct {
 }
 
 type Lint struct {
+	Acceptable int   `default:"0" yaml:"acceptable,omitempty"`
+	Rules      Rules `yaml:"rules,omitempty,omitzero"`
+}
+
+type Rules struct {
 	Pipeline  Pipeline  `yaml:"pipeline,omitempty,omitzero"`
 	TailorDB  TailorDB  `yaml:"tailordb,omitempty,omitzero"`
 	StateFlow StateFlow `yaml:"stateflow,omitempty,omitzero"`

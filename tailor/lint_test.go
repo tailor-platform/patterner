@@ -105,8 +105,8 @@ func TestClient_Lint_TailorDB(t *testing.T) {
 		{
 			name: "draft feature warning",
 			configMod: func(c *config.Config) {
-				c.Lint.TailorDB.DeprecatedFeature.Enabled = true
-				c.Lint.TailorDB.DeprecatedFeature.AllowDraft = false
+				c.Lint.Rules.TailorDB.DeprecatedFeature.Enabled = true
+				c.Lint.Rules.TailorDB.DeprecatedFeature.AllowDraft = false
 			},
 			resources: &Resources{
 				TailorDBs: []*TailorDB{
@@ -126,8 +126,8 @@ func TestClient_Lint_TailorDB(t *testing.T) {
 		{
 			name: "legacy type permission warning",
 			configMod: func(c *config.Config) {
-				c.Lint.TailorDB.DeprecatedFeature.Enabled = true
-				c.Lint.TailorDB.DeprecatedFeature.AllowTypePermission = false
+				c.Lint.Rules.TailorDB.DeprecatedFeature.Enabled = true
+				c.Lint.Rules.TailorDB.DeprecatedFeature.AllowTypePermission = false
 			},
 			resources: &Resources{
 				TailorDBs: []*TailorDB{
@@ -147,8 +147,8 @@ func TestClient_Lint_TailorDB(t *testing.T) {
 		{
 			name: "legacy record permission warning",
 			configMod: func(c *config.Config) {
-				c.Lint.TailorDB.DeprecatedFeature.Enabled = true
-				c.Lint.TailorDB.DeprecatedFeature.AllowRecordPermission = false
+				c.Lint.Rules.TailorDB.DeprecatedFeature.Enabled = true
+				c.Lint.Rules.TailorDB.DeprecatedFeature.AllowRecordPermission = false
 			},
 			resources: &Resources{
 				TailorDBs: []*TailorDB{
@@ -168,8 +168,8 @@ func TestClient_Lint_TailorDB(t *testing.T) {
 		{
 			name: "CEL hooks deprecated warning",
 			configMod: func(c *config.Config) {
-				c.Lint.TailorDB.DeprecatedFeature.Enabled = true
-				c.Lint.TailorDB.DeprecatedFeature.AllowCELHooks = false
+				c.Lint.Rules.TailorDB.DeprecatedFeature.Enabled = true
+				c.Lint.Rules.TailorDB.DeprecatedFeature.AllowCELHooks = false
 			},
 			resources: &Resources{
 				TailorDBs: []*TailorDB{
@@ -240,7 +240,7 @@ func TestClient_Lint_Pipeline(t *testing.T) {
 		{
 			name: "insecure authorization warning",
 			configMod: func(c *config.Config) {
-				c.Lint.Pipeline.InsecureAuthorization.Enabled = true
+				c.Lint.Rules.Pipeline.InsecureAuthorization.Enabled = true
 			},
 			resources: &Resources{
 				Pipelines: []*Pipeline{
@@ -260,8 +260,8 @@ func TestClient_Lint_Pipeline(t *testing.T) {
 		{
 			name: "step length warning",
 			configMod: func(c *config.Config) {
-				c.Lint.Pipeline.StepLength.Enabled = true
-				c.Lint.Pipeline.StepLength.Max = 1
+				c.Lint.Rules.Pipeline.StepLength.Enabled = true
+				c.Lint.Rules.Pipeline.StepLength.Max = 1
 			},
 			resources: &Resources{
 				Pipelines: []*Pipeline{
@@ -284,8 +284,8 @@ func TestClient_Lint_Pipeline(t *testing.T) {
 		{
 			name: "legacy script warnings",
 			configMod: func(c *config.Config) {
-				c.Lint.Pipeline.DeprecatedFeature.Enabled = true
-				c.Lint.Pipeline.DeprecatedFeature.AllowCELScript = false
+				c.Lint.Rules.Pipeline.DeprecatedFeature.Enabled = true
+				c.Lint.Rules.Pipeline.DeprecatedFeature.AllowCELScript = false
 			},
 			resources: &Resources{
 				Pipelines: []*Pipeline{
@@ -318,7 +318,7 @@ func TestClient_Lint_Pipeline(t *testing.T) {
 		{
 			name: "invalid GraphQL syntax error",
 			configMod: func(c *config.Config) {
-				c.Lint.Pipeline.DeprecatedFeature.Enabled = true
+				c.Lint.Rules.Pipeline.DeprecatedFeature.Enabled = true
 			},
 			resources: &Resources{
 				Pipelines: []*Pipeline{
@@ -414,8 +414,8 @@ func TestClient_Lint_GraphQLParsing(t *testing.T) {
 			name:         "StateFlow mutation warning",
 			graphqlQuery: "mutation { newState(input: {status: \"active\"}) { id } }",
 			configMod: func(c *config.Config) {
-				c.Lint.Pipeline.DeprecatedFeature.Enabled = true
-				c.Lint.Pipeline.DeprecatedFeature.AllowStateFlow = false
+				c.Lint.Rules.Pipeline.DeprecatedFeature.Enabled = true
+				c.Lint.Rules.Pipeline.DeprecatedFeature.AllowStateFlow = false
 			},
 			expectedMsgs: []string{"StateFlow feature is deprecated (found usage of newState)"},
 		},
@@ -424,8 +424,8 @@ func TestClient_Lint_GraphQLParsing(t *testing.T) {
 			graphqlQuery: "mutation { appendDraftUser(input: {name: \"test\"}) { id } }",
 			typeNames:    []string{"User"},
 			configMod: func(c *config.Config) {
-				c.Lint.Pipeline.DeprecatedFeature.Enabled = true
-				c.Lint.Pipeline.DeprecatedFeature.AllowDraft = false
+				c.Lint.Rules.Pipeline.DeprecatedFeature.Enabled = true
+				c.Lint.Rules.Pipeline.DeprecatedFeature.AllowDraft = false
 			},
 			expectedMsgs: []string{"Draft feature is deprecated (found usage of appendDraftUser)"},
 		},
@@ -509,7 +509,7 @@ func TestClient_Lint_GraphQLParsing(t *testing.T) {
 
 func TestClient_Lint_StateFlow(t *testing.T) {
 	cfg := createTestConfig(t)
-	cfg.Lint.StateFlow.DeprecatedFeature.Enabled = true
+	cfg.Lint.Rules.StateFlow.DeprecatedFeature.Enabled = true
 
 	resources := &Resources{
 		StateFlows: []*StateFlow{
@@ -545,7 +545,7 @@ func TestClient_Lint_StateFlow(t *testing.T) {
 
 func TestClient_Lint_MultipleMutations(t *testing.T) {
 	cfg := createTestConfig(t)
-	cfg.Lint.Pipeline.MultipleMutations.Enabled = true
+	cfg.Lint.Rules.Pipeline.MultipleMutations.Enabled = true
 
 	resources := &Resources{
 		Pipelines: []*Pipeline{
@@ -599,7 +599,7 @@ func TestClient_Lint_MultipleMutations(t *testing.T) {
 
 func TestClient_Lint_QueryBeforeMutation(t *testing.T) {
 	cfg := createTestConfig(t)
-	cfg.Lint.Pipeline.QueryBeforeMutation.Enabled = true
+	cfg.Lint.Rules.Pipeline.QueryBeforeMutation.Enabled = true
 
 	resources := &Resources{
 		Pipelines: []*Pipeline{

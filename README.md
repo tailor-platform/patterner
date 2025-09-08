@@ -87,30 +87,40 @@ Patterner uses a `.patterner.yml` file for configuration. The configuration incl
 ```yaml
 workspaceID: xxxxxxxXXxxxxxxxxxxxxx
 lint:
-  pipeline:
-    deprecatedFeature:
-      enabled: true
-      allowCELScript: false
-      allowDraft: false
-      allowStateFlow: false
-    insecureAuthorization:
-      enabled: false
-    stepLength:
-      enabled: true
-      max: 30
-    multipleMutations:
-      enabled: true
-    queryBeforeMutation:
-      enabled: true
-  tailordb:
-    deprecatedFeature:
-      enabled: true
-      allowDraft: false
-      allowCELHooks: false
-  stateflow:
-    deprecatedFeature:
-      enabled: true
+  acceptable: 5
+  rules:
+    pipeline:
+      deprecatedFeature:
+        enabled: true
+        allowCELScript: false
+        allowDraft: false
+        allowStateFlow: false
+      insecureAuthorization:
+        enabled: false
+      stepLength:
+        enabled: true
+        max: 30
+      multipleMutations:
+        enabled: true
+      queryBeforeMutation:
+        enabled: true
+    tailordb:
+      deprecatedFeature:
+        enabled: true
+        allowDraft: false
+        allowCELHooks: false
+    stateflow:
+      deprecatedFeature:
+        enabled: true
 ```
+
+### Lint Configuration
+
+#### Acceptable Warnings
+- **acceptable** - Set the maximum number of acceptable lint warnings (default: 0)
+  - When the number of warnings exceeds this value, the lint command will exit with a failure status
+  - This allows you to gradually improve code quality by setting a reasonable warning threshold
+  - Example: `acceptable: 5` allows up to 5 warnings before failing
 
 ### Lint Rules
 
