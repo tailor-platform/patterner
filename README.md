@@ -143,7 +143,7 @@ The following metrics are collected and displayed:
 - `pipeline_resolvers_total` - Total number of pipeline resolvers
 - `pipeline_resolver_steps_total` - Total number of pipeline resolver steps
 - `pipeline_resolver_execution_paths_total` - Total number of pipeline resolver execution paths
-  - Calculated based on the number of steps and tests in each resolver (steps^tests)
+  - Calculated based on the number of steps and tests in each resolver (steps * 2^tests)
   - Used to understand the total number of execution paths based on testable step combinations
 
 **TailorDB Metrics:**
