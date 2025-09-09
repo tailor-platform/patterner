@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.4.0](https://github.com/tailor-platform/patterner/compare/v0.3.1...v0.4.0) - 2025-09-09
+### New Features 🎉
+- feat: add coverage command by @k1LoW in https://github.com/tailor-platform/patterner/pull/12
+
 ## [v0.3.1](https://github.com/tailor-platform/patterner/compare/v0.3.0...v0.3.1) - 2025-09-08
 ### Fix bug 🐛
 - fix: correct assignment of working directory path by @k1LoW in https://github.com/tailor-platform/patterner/pull/9
