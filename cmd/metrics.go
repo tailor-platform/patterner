@@ -36,6 +36,8 @@ var metricsCmd = &cobra.Command{
 	Long:  `retrieve and display metrics about the resources in the specified workspace.`,
 	Args:  cobra.NoArgs,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		spi.Start()
+		defer spi.Stop()
 		cfg, err := config.Load()
 		if err != nil {
 			return err
@@ -51,6 +53,7 @@ var metricsCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		spi.Disable()
 		metrics, err := c.Metrics(resources)
 		if err != nil {
 			return err

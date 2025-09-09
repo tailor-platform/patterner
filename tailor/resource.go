@@ -2,6 +2,7 @@ package tailor
 
 import (
 	"context"
+	"time"
 
 	tailorv1 "buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go/tailor/v1"
 	"connectrpc.com/connect"
@@ -12,6 +13,13 @@ type Resources struct {
 	Pipelines    []*Pipeline
 	TailorDBs    []*TailorDB
 	StateFlows   []*StateFlow
+
+	// Options
+	withoutApplications   bool
+	withoutTailorDB       bool
+	withoutPipeline       bool
+	withoutStateFlow      bool
+	executionResultsSince *time.Time
 }
 
 type Application struct {
@@ -25,15 +33,16 @@ type Pipeline struct {
 }
 
 type PipelineResolver struct {
-	Name          string
-	Description   string
-	Authorization string
-	SDL           string
-	PreHook       string
-	PreScript     string
-	PostScript    string
-	PostHook      string
-	Steps         []*PipelineStep
+	Name             string
+	Description      string
+	Authorization    string
+	SDL              string
+	PreHook          string
+	PreScript        string
+	PostScript       string
+	PostHook         string
+	Steps            []*PipelineStep
+	ExecutionResults []*tailorv1.PipelineResolverExecutionResult
 }
 
 type PipelineStep struct {
@@ -117,11 +126,53 @@ type StateFlowAdminUser struct {
 	UserID string
 }
 
-func (c *Client) Resources(ctx context.Context) (*Resources, error) {
-	resources := &Resources{}
+type ResourceOption func(*Resources) error
 
+func WithoutApplications() ResourceOption {
+	return func(r *Resources) error {
+		r.withoutApplications = true
+		return nil
+	}
+}
+
+func WithoutTailorDB() ResourceOption {
+	return func(r *Resources) error {
+		r.withoutTailorDB = true
+		return nil
+	}
+}
+
+func WithoutPipeline() ResourceOption {
+	return func(r *Resources) error {
+		r.withoutPipeline = true
+		return nil
+	}
+}
+
+func WithoutStateFlow() ResourceOption {
+	return func(r *Resources) error {
+		r.withoutStateFlow = true
+		return nil
+	}
+}
+
+func WithExecutionResults(since *time.Time) ResourceOption {
+	return func(r *Resources) error {
+		r.withoutPipeline = false
+		r.executionResultsSince = since
+		return nil
+	}
+}
+
+func (c *Client) Resources(ctx context.Context, opts ...ResourceOption) (*Resources, error) {
+	resources := &Resources{}
+	for _, opt := range opts {
+		if err := opt(resources); err != nil {
+			return nil, err
+		}
+	}
 	// Pipeline Services
-	{
+	if !resources.withoutPipeline {
 		pageToken := ""
 		for {
 			res, err := c.client.ListPipelineServices(ctx, connect.NewRequest(&tailorv1.ListPipelineServicesRequest{
@@ -170,6 +221,7 @@ func (c *Client) Resources(ctx context.Context) (*Resources, error) {
 								PostScript:    rr.GetPostScript(),
 								PostHook:      rr.GetPostHook().GetExpr(),
 							}
+							hasTest := false
 							for _, p := range rr.GetPipelines() {
 								step := &PipelineStep{
 									Name:           p.GetName(),
@@ -188,8 +240,49 @@ func (c *Client) Resources(ctx context.Context) (*Resources, error) {
 										Test:    p.GetTest(),
 									},
 								}
+								if p.GetTest() != "" {
+									hasTest = true
+								}
 								resolver.Steps = append(resolver.Steps, step)
 							}
+
+							// Pipeline Resolvers Execution Results
+							if resources.executionResultsSince != nil {
+								pageToken := ""
+								view := tailorv1.PipelineResolverExecutionResultView_PIPELINE_RESOLVER_EXECUTION_RESULT_VIEW_BASIC
+								if hasTest {
+									// Because branching occurs, context information is required.
+									view = tailorv1.PipelineResolverExecutionResultView_PIPELINE_RESOLVER_EXECUTION_RESULT_VIEW_FULL
+								}
+							L:
+								for {
+									res, err := c.client.ListPipelineResolverExecutionResults(ctx, connect.NewRequest(&tailorv1.ListPipelineResolverExecutionResultsRequest{
+										WorkspaceId:   c.cfg.WorkspaceID,
+										NamespaceName: p.GetNamespace().GetName(),
+										ResolverName:  r.GetName(),
+										View:          view,
+										PageSize:      pageSize,
+										PageToken:     pageToken,
+									}))
+									if err != nil {
+										return nil, err
+									}
+									for _, r := range res.Msg.GetResults() {
+										if r.GetCreatedAt().AsTime().Before(*resources.executionResultsSince) {
+											// Since the results are ordered by CreatedAt descending,
+											// we can stop fetching more results once we reach an older entry.
+											pageToken = ""
+											break L
+										}
+										resolver.ExecutionResults = append(resolver.ExecutionResults, r)
+									}
+									if res.Msg.GetNextPageToken() == "" {
+										break
+									}
+									pageToken = res.Msg.GetNextPageToken()
+								}
+							}
+
 							pipeline.Resolvers = append(pipeline.Resolvers, resolver)
 						}
 						if res.Msg.GetNextPageToken() == "" {
@@ -208,7 +301,7 @@ func (c *Client) Resources(ctx context.Context) (*Resources, error) {
 	}
 
 	// TailorDB Services
-	{
+	if !resources.withoutTailorDB {
 		pageToken := ""
 		for {
 			res, err := c.client.ListTailorDBServices(ctx, connect.NewRequest(&tailorv1.ListTailorDBServicesRequest{
@@ -286,7 +379,7 @@ func (c *Client) Resources(ctx context.Context) (*Resources, error) {
 	}
 
 	// StateFlow Services
-	{
+	if !resources.withoutStateFlow {
 		pageToken := ""
 		for {
 			res, err := c.client.ListStateflowServices(ctx, connect.NewRequest(&tailorv1.ListStateflowServicesRequest{

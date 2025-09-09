@@ -10,6 +10,7 @@ Patterner is a command-line tool designed to help developers identify patterns a
 
 - **Lint** - Analyze resources in your workspace and identify potential issues or deviations from best practices
 - **Metrics** - Collect and display metrics about resources in your workspace
+- **Coverage** - Analyze and display pipeline resolver step coverage to monitor execution quality
 - **Configuration** - Flexible configuration system with YAML-based settings
 
 ## Installation
@@ -79,6 +80,59 @@ patterner metrics
 ```
 
 The metrics command outputs detailed JSON data about your workspace resources.
+
+### View Coverage
+
+Display pipeline resolver step coverage for your workspace:
+
+```bash
+patterner coverage
+```
+
+**Note:** The coverage command requires a Tailor Platform access token. Set the `TAILOR_TOKEN` environment variable:
+
+```bash
+# Using tailorctl to get access token
+env TAILOR_TOKEN=$(tailorctl auth get accessToken) patterner coverage
+
+# Or set the token directly
+export TAILOR_TOKEN=your_access_token
+patterner coverage
+```
+
+The coverage command analyzes pipeline resolver step execution and displays coverage percentages to help monitor pipeline execution quality.
+
+#### Coverage Options
+
+- `--since, -s` (default: "30min") - Analyze execution results since the specified time period
+- `--full-report, -f` (default: false) - Display detailed coverage report including per-resolver breakdown
+- `--workspace-id` - Target workspace ID to analyze
+
+#### Usage Examples
+
+```bash
+# Basic coverage analysis (last 30 minutes)
+patterner coverage
+
+# Coverage for the past hour
+patterner coverage --since 1hour
+
+# Detailed coverage report
+patterner coverage --full-report
+
+# Detailed report for the past 24 hours
+patterner coverage --since 24hours --full-report
+```
+
+#### Output Format
+
+**Standard output:**
+```
+Pipeline Resolver Step Coverage 75.0% [3/4]
+```
+
+**Detailed report:**
+Shows coverage breakdown per resolver in addition to overall coverage statistics.
 
 #### Available Metrics
 
@@ -185,6 +239,7 @@ lint:
 - `patterner init` - Initialize configuration file
 - `patterner lint` - Lint workspace resources
 - `patterner metrics` - Display workspace metrics
+- `patterner coverage` - Display pipeline resolver step coverage
 
 ## License
 

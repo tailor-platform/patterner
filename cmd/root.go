@@ -23,12 +23,17 @@ package cmd
 
 import (
 	"os"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
 	"github.com/tailor-platform/patterner/version"
 )
 
-var workspaceID string
+var (
+	workspaceID string
+	spi         = spinner.New(spinner.CharSets[14], 100*time.Millisecond, spinner.WithWriter(os.Stderr))
+)
 
 var rootCmd = &cobra.Command{
 	Use:          "patterner",
