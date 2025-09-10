@@ -26,7 +26,7 @@ func createTestConfig(t *testing.T) *config.Config {
 					InsecureAuthorization: config.InsecureAuthorization{
 						Enabled: true,
 					},
-					StepLength: config.StepLength{
+					StepCount: config.StepCount{
 						Enabled: true,
 						Max:     10,
 					},

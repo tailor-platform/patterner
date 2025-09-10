@@ -27,7 +27,7 @@ type Rules struct {
 type Pipeline struct {
 	DeprecatedFeature     PipelineDeprecatedFeature `yaml:"deprecatedFeature,omitempty,omitzero"`
 	InsecureAuthorization InsecureAuthorization     `yaml:"insecureAuthorization,omitempty,omitzero"`
-	StepLength            StepLength                `yaml:"stepLength,omitempty,omitzero"`
+	StepCount            StepCount                `yaml:"stepCount,omitempty,omitzero"`
 	MultipleMutations     MultipleMutations         `yaml:"multipleMutations,omitempty,omitzero"`
 	QueryBeforeMutation   QueryBeforeMutation       `yaml:"queryBeforeMutation,omitempty,omitzero"`
 }
@@ -43,7 +43,7 @@ type InsecureAuthorization struct {
 	Enabled bool `default:"true" yaml:"enabled,omitempty"`
 }
 
-type StepLength struct {
+type StepCount struct {
 	Enabled bool `default:"true" yaml:"enabled,omitempty"`
 	Max     int  `default:"30" yaml:"max,omitempty"`
 }
