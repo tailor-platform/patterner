@@ -1,6 +1,6 @@
 # Patterner
 
-`patterner` is a tool to analyze and present best practices (patterns) for Tailor Platform applications.
+`patterner` is a tool to analyze and present best practices (patterns) for [Tailor Platform](https://www.tailor.tech/) applications.
 
 ## Overview
 
@@ -127,6 +127,7 @@ patterner coverage --since 24hours --full-report
 #### Output Format
 
 **Standard output:**
+
 ```
 Pipeline Resolver Step Coverage 75.0% [3/4]
 ```
@@ -139,19 +140,22 @@ Shows coverage breakdown per resolver in addition to overall coverage statistics
 The following metrics are collected and displayed:
 
 **Pipeline Metrics:**
+
 - `pipelines_total` - Total number of pipelines
 - `pipeline_resolvers_total` - Total number of pipeline resolvers
 - `pipeline_resolver_steps_total` - Total number of pipeline resolver steps
 - `pipeline_resolver_execution_paths_total` - Total number of pipeline resolver execution paths
-  - Calculated based on the number of steps and tests in each resolver (steps * 2^tests)
+  - Calculated based on the number of steps and tests in each resolver (steps \* 2^tests)
   - Used to understand the total number of execution paths based on testable step combinations
 
 **TailorDB Metrics:**
+
 - `tailordbs_total` - Total number of TailorDBs
 - `tailordb_types_total` - Total number of TailorDB types
 - `tailordb_type_fields_total` - Total number of TailorDB type fields
 
 **StateFlow Metrics:**
+
 - `stateflows_total` - Total number of StateFlows
 
 ## Configuration
@@ -191,6 +195,7 @@ lint:
 ### Lint Configuration
 
 #### Acceptable Warnings
+
 - **acceptable** - Set the maximum number of acceptable lint warnings (default: 0)
   - When the number of warnings exceeds this value, the lint command will exit with a failure status
   - This allows you to gradually improve code quality by setting a reasonable warning threshold
@@ -199,13 +204,14 @@ lint:
 ### Lint Rules
 
 #### Pipeline Rules
+
 - **deprecatedFeature** - Identify deprecated features and promote modern alternatives
   - `enabled` (default: true) - Enable/disable deprecated feature detection
   - `allowCELScript` (default: false) - Allow CEL script usage in pipelines
   - `allowDraft` (default: false) - Allow draft resources in pipeline configurations
   - `allowStateFlow` (default: false) - Allow StateFlow resources in pipeline configurations
   - Detects deprecated patterns and recommends modern Pipeline alternatives
-      - https://docs.tailor.tech/reference/service-lifecycle-policy
+    - https://docs.tailor.tech/reference/service-lifecycle-policy
   - Enabled by default to promote migration away from deprecated features
 - **insecureAuthorization** - Detect insecure authorization patterns
 - **stepCount** - Ensure pipeline steps don't exceed maximum count
@@ -213,19 +219,21 @@ lint:
 - **queryBeforeMutation** - Check for queries before mutations
 
 #### TailorDB Rules
+
 - **deprecatedFeature** - Identify deprecated TailorDB features and promote modern alternatives
   - `enabled` (default: true) - Enable/disable deprecated feature detection
   - `allowDraft` (default: false) - Allow draft resources in TailorDB configurations
   - `allowCELHooks` (default: false) - Allow CEL hook usage in TailorDB configurations
   - Detects deprecated patterns and recommends modern TailorDB alternatives
-      - https://docs.tailor.tech/reference/service-lifecycle-policy
+    - https://docs.tailor.tech/reference/service-lifecycle-policy
   - Enabled by default to promote migration away from deprecated features
 
 #### StateFlow Rules
+
 - **deprecatedFeature** - Identify deprecated StateFlow features and promote modern alternatives
   - `enabled` (default: true) - Enable/disable deprecated feature detection
   - Detects deprecated StateFlow patterns and recommends modern alternatives
-      - https://docs.tailor.tech/reference/service-lifecycle-policy
+    - https://docs.tailor.tech/reference/service-lifecycle-policy
   - Enabled by default to promote migration away from deprecated features
 
 ## Command Reference
@@ -243,6 +251,10 @@ lint:
 
 ## License
 
-MIT License
+This repository is licensed under the [MIT License](LICENSE).
+
+## Contributing
+
+For contributions, please see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 Copyright © 2025 Tailor Inc.
