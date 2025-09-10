@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.4.1](https://github.com/tailor-platform/patterner/compare/v0.4.0...v0.4.1) - 2025-09-10
+### Other Changes
+- chore: add renovate config by @k1LoW in https://github.com/tailor-platform/patterner/pull/14
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/connectrpc/go to v1.18.1-20250908011007-1097bcc7b2bf.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/16
+- chore: add CODEOWNERS by @dragon3 in https://github.com/tailor-platform/patterner/pull/19
+- fix: rename stepLength to stepCount by @k1LoW in https://github.com/tailor-platform/patterner/pull/20
+- chore: update readme nits by @jackchuka in https://github.com/tailor-platform/patterner/pull/21
+
 ## [v0.4.0](https://github.com/tailor-platform/patterner/compare/v0.3.1...v0.4.0) - 2025-09-09
 ### New Features 🎉
 - feat: add coverage command by @k1LoW in https://github.com/tailor-platform/patterner/pull/12
