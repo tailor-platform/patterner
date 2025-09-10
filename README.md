@@ -249,12 +249,6 @@ lint:
 - `patterner metrics` - Display workspace metrics
 - `patterner coverage` - Display pipeline resolver step coverage
 
-## License
-
-This repository is licensed under the [MIT License](LICENSE).
-
-## Contributing
-
-For contributions, please see [CONTRIBUTING.md](CONTRIBUTING.md).
+---
 
 Copyright © 2025 Tailor Inc.
