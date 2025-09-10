@@ -86,13 +86,13 @@ func (c *Client) Lint(resources *Resources) ([]*LintWarn, error) {
 				})
 			}
 
-			stepLength := len(r.Steps)
-			// Pipeline/StepLength
-			if c.cfg.Lint.Rules.Pipeline.StepLength.Enabled && stepLength > c.cfg.Lint.Rules.Pipeline.StepLength.Max {
+			stepCount := len(r.Steps)
+			// Pipeline/StepCount
+			if c.cfg.Lint.Rules.Pipeline.StepCount.Enabled && stepCount > c.cfg.Lint.Rules.Pipeline.StepCount.Max {
 				warns = append(warns, &LintWarn{
 					Type:    LintTargetTypePipeline,
 					Name:    fmt.Sprintf("%s/%s", p.NamespaceName, r.Name),
-					Message: fmt.Sprintf("resolver has too many steps (%d > %d)", stepLength, c.cfg.Lint.Rules.Pipeline.StepLength.Max),
+					Message: fmt.Sprintf("resolver has too many steps (%d > %d)", stepCount, c.cfg.Lint.Rules.Pipeline.StepCount.Max),
 				})
 			}
 

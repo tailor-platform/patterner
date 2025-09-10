@@ -171,7 +171,7 @@ lint:
         allowStateFlow: false
       insecureAuthorization:
         enabled: false
-      stepLength:
+      stepCount:
         enabled: true
         max: 30
       multipleMutations:
@@ -208,7 +208,7 @@ lint:
       - https://docs.tailor.tech/reference/service-lifecycle-policy
   - Enabled by default to promote migration away from deprecated features
 - **insecureAuthorization** - Detect insecure authorization patterns
-- **stepLength** - Ensure pipeline steps don't exceed maximum length
+- **stepCount** - Ensure pipeline steps don't exceed maximum count
 - **multipleMutations** - Identify multiple mutations in a single operation
 - **queryBeforeMutation** - Check for queries before mutations
 

@@ -260,8 +260,8 @@ func TestClient_Lint_Pipeline(t *testing.T) {
 		{
 			name: "step length warning",
 			configMod: func(c *config.Config) {
-				c.Lint.Rules.Pipeline.StepLength.Enabled = true
-				c.Lint.Rules.Pipeline.StepLength.Max = 1
+				c.Lint.Rules.Pipeline.StepCount.Enabled = true
+				c.Lint.Rules.Pipeline.StepCount.Max = 1
 			},
 			resources: &Resources{
 				Pipelines: []*Pipeline{
