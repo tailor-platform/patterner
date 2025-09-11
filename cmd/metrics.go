@@ -37,7 +37,10 @@ import (
 	"github.com/tailor-platform/patterner/tailor"
 )
 
-var outOctocovPath string
+var (
+	outOctocovPath   string
+	withLintWarnings bool
+)
 
 var metricsCmd = &cobra.Command{
 	Use:   "metrics",
@@ -68,6 +71,18 @@ var metricsCmd = &cobra.Command{
 			return err
 		}
 		spi.Disable()
+
+		if withLintWarnings {
+			warns, err := c.Lint(resources)
+			if err != nil {
+				return err
+			}
+			for _, w := range warns {
+				fmt.Printf("[%s] %s: %s\n", w.Type, w.Name, w.Message)
+			}
+			fmt.Println()
+		}
+
 		metrics, err := c.Metrics(resources)
 		if err != nil {
 			return err
@@ -166,6 +181,7 @@ func init() {
 	rootCmd.AddCommand(metricsCmd)
 	metricsCmd.Flags().StringVarP(&since, "since", "s", "30min", "only consider executions since the given duration (e.g., 24hours, 30min, 15sec)")
 	metricsCmd.Flags().StringVarP(&outOctocovPath, "out-octocov-path", "", "", "output the metrics in octocov custom metrics format to the specified file (e.g., ./metrics.json)")
+	metricsCmd.Flags().BoolVarP(&withLintWarnings, "with-lint-wanings", "", false, "display the lint warnings along with the metrics")
 }
 
 // copy from github.com/k1LoW/octocov/report
