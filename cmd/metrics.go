@@ -22,11 +22,15 @@ THE SOFTWARE.
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
+	"math"
+	"os"
 	"time"
 
 	"github.com/k1LoW/duration"
+	"github.com/olekukonko/tablewriter"
+	"github.com/olekukonko/tablewriter/renderer"
+	"github.com/olekukonko/tablewriter/tw"
 	"github.com/spf13/cobra"
 	"github.com/tailor-platform/patterner/config"
 	"github.com/tailor-platform/patterner/tailor"
@@ -65,11 +69,59 @@ var metricsCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		b, err := json.MarshalIndent(metrics, "", "  ")
-		if err != nil {
+		table := tablewriter.NewTable(os.Stdout,
+			tablewriter.WithTrimSpace(tw.Off),
+			tablewriter.WithRenderer(renderer.NewBlueprint(tw.Rendition{
+				Borders: tw.BorderNone,
+				Symbols: tw.NewSymbols(tw.StyleNone),
+				Settings: tw.Settings{
+					Lines: tw.Lines{
+						ShowTop:        tw.Off,
+						ShowBottom:     tw.Off,
+						ShowHeaderLine: tw.Off,
+						ShowFooterLine: tw.Off,
+					},
+					Separators: tw.Separators{
+						ShowHeader:     tw.Off,
+						ShowFooter:     tw.Off,
+						BetweenRows:    tw.Off,
+						BetweenColumns: tw.Off,
+					},
+				},
+			})),
+			tablewriter.WithHeaderConfig(tw.CellConfig{
+				Formatting: tw.CellFormatting{
+					AutoFormat: tw.Off,
+					Alignment:  tw.AlignLeft,
+				},
+				Padding: tw.CellPadding{
+					Global: tw.Padding{Left: tw.Space, Right: tw.Space, Top: tw.Empty, Bottom: tw.Empty},
+				},
+			}),
+			tablewriter.WithRowConfig(tw.CellConfig{
+				Formatting: tw.CellFormatting{
+					AutoFormat: tw.Off,
+				},
+				ColumnAligns: []tw.Align{tw.AlignLeft, tw.AlignRight},
+				Padding: tw.CellPadding{
+					Global: tw.Padding{Left: tw.Space, Right: tw.Space, Top: tw.Empty, Bottom: tw.Empty},
+				},
+			}),
+		)
+		data := make([][]string, 0, len(metrics))
+		for _, m := range metrics {
+			if m.Value == (math.Round(m.Value*10) / 10) {
+				data = append(data, []string{m.Name, fmt.Sprintf("%.0f%s", m.Value, m.Unit)})
+			} else {
+				data = append(data, []string{m.Name, fmt.Sprintf("%.1f%s", m.Value, m.Unit)})
+			}
+		}
+		if err := table.Bulk(data); err != nil {
 			return err
 		}
-		fmt.Println(string(b))
+		if err := table.Render(); err != nil {
+			return err
+		}
 		return nil
 	},
 }
