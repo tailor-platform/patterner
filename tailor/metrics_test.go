@@ -565,7 +565,7 @@ func TestClient_Metrics_EdgeCases(t *testing.T) {
 	})
 }
 
-func TestClient_Metrics_MetricNames(t *testing.T) {
+func TestClient_Metrics_MetricKeys(t *testing.T) {
 	cfg := createTestConfig(t)
 	client, err := New(cfg)
 	if err != nil {
@@ -620,71 +620,6 @@ func TestClient_Metrics_MetricNames(t *testing.T) {
 	}
 }
 
-func TestClient_Metrics_MetricFields(t *testing.T) {
-	cfg := createTestConfig(t)
-	client, err := New(cfg)
-	if err != nil {
-		t.Fatalf("Failed to create client: %v", err)
-	}
-
-	resources := &Resources{
-		Applications: []*Application{},
-		Pipelines:    []*Pipeline{},
-		TailorDBs:    []*TailorDB{},
-		StateFlows:   []*StateFlow{},
-	}
-	metrics, err := client.Metrics(resources)
-	if err != nil {
-		t.Fatalf("Unexpected error: %v", err)
-	}
-
-	expectedKeys := map[string]string{
-		"pipeline_resolver_step_coverage_percentage": "pipeline_resolver_step_coverage_percentage",
-		"lint_warnings_total":                        "lint_warnings_total",
-		"pipelines_total":                            "pipelines_total",
-		"pipeline_resolvers_total":                   "pipeline_resolvers_total",
-		"pipeline_resolver_steps_total":              "pipeline_resolver_steps_total",
-		"pipeline_resolver_execution_paths_total":    "pipeline_resolver_execution_paths_total",
-		"tailordbs_total":                            "tailordbs_total",
-		"tailordb_types_total":                       "tailordb_types_total",
-		"tailordb_type_fields_total":                 "tailordb_type_fields_total",
-		"stateflows_total":                           "stateflows_total",
-	}
-
-	for _, metric := range metrics {
-		expectedKey, exists := expectedKeys[metric.Key]
-		if !exists {
-			t.Errorf("Unexpected metric: %s", metric.Key)
-		}
-		if expectedKey != metric.Key {
-			t.Errorf("Wrong key for metric %s: expected '%s', got '%s'",
-				metric.Key, expectedKey, metric.Key)
-		}
-	}
-}
-
-func TestMetric_Fields(t *testing.T) {
-	metric := Metric{
-		Key:   "test_metric",
-		Name:  "Test Metric",
-		Value: 42.5,
-		Unit:  "count",
-	}
-
-	if metric.Key != "test_metric" {
-		t.Errorf("Expected Key to be 'test_metric', got '%s'", metric.Key)
-	}
-	if metric.Name != "Test Metric" {
-		t.Errorf("Expected Name to be 'Test Metric', got '%s'", metric.Name)
-	}
-	if metric.Value != 42.5 {
-		t.Errorf("Expected Value to be 42.5, got %f", metric.Value)
-	}
-	if metric.Unit != "count" {
-		t.Errorf("Expected Unit to be 'count', got '%s'", metric.Unit)
-	}
-}
-
 func TestClient_Metrics_LargeNumbers(t *testing.T) {
 	// Test with large numbers to ensure proper handling
 	cfg := createTestConfig(t)
@@ -695,11 +630,11 @@ func TestClient_Metrics_LargeNumbers(t *testing.T) {
 
 	// Create resources with many items
 	pipelines := make([]*Pipeline, 100)
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		resolvers := make([]*PipelineResolver, 10)
-		for j := 0; j < 10; j++ {
+		for j := range 10 {
 			steps := make([]*PipelineStep, 5)
-			for k := 0; k < 5; k++ {
+			for k := range 5 {
 				steps[k] = &PipelineStep{Name: "step"}
 			}
 			resolvers[j] = &PipelineResolver{
