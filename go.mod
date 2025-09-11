@@ -11,7 +11,7 @@ require (
 	github.com/goccy/go-yaml v1.18.0
 	github.com/k1LoW/duration v1.2.0
 	github.com/spf13/cobra v1.10.1
-	github.com/vektah/gqlparser/v2 v2.5.14
+	github.com/vektah/gqlparser/v2 v2.5.30
 	google.golang.org/protobuf v1.36.9
 )
 
