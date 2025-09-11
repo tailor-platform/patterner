@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.5.0](https://github.com/tailor-platform/patterner/compare/v0.4.2...v0.5.0) - 2025-09-11
+### New Features 🎉
+- fix: change `metrics` output by @k1LoW in https://github.com/tailor-platform/patterner/pull/27
+
 ## [v0.4.2](https://github.com/tailor-platform/patterner/compare/v0.4.1...v0.4.2) - 2025-09-11
 ### Other Changes
 - docs: since the GitHub UI has Contributing and License tabs, they are  unnecessary in the README. by @k1LoW in https://github.com/tailor-platform/patterner/pull/22
