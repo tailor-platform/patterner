@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.4.2](https://github.com/tailor-platform/patterner/compare/v0.4.1...v0.4.2) - 2025-09-11
+### Other Changes
+- docs: since the GitHub UI has Contributing and License tabs, they are  unnecessary in the README. by @k1LoW in https://github.com/tailor-platform/patterner/pull/22
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go to v1.36.9-20250908011007-1097bcc7b2bf.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/17
+- fix(deps): update module google.golang.org/protobuf to v1.36.9 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/25
+- chore(deps): update songmu/tagpr action to v1.9.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/26
+- fix(deps): update module github.com/vektah/gqlparser/v2 to v2.5.30 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/24
+
 ## [v0.4.1](https://github.com/tailor-platform/patterner/compare/v0.4.0...v0.4.1) - 2025-09-10
 ### Other Changes
 - chore: add renovate config by @k1LoW in https://github.com/tailor-platform/patterner/pull/14
