@@ -90,22 +90,16 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 		Value: float64(stepsTotal),
 		Unit:  "",
 	})
-	if executionPathsTotal < 0 {
-		metrics = append(metrics, Metric{
-			Key:   "pipeline_resolver_execution_paths_total",
-			Name:  "Total number of pipeline resolver execution paths",
-			Value: float64(executionPathsTotal),
-			Unit:  "",
-			Error: errors.New("overflow detected"),
-		})
-	} else {
-		metrics = append(metrics, Metric{
-			Key:   "pipeline_resolver_execution_paths_total",
-			Name:  "Total number of pipeline resolver execution paths",
-			Value: float64(executionPathsTotal),
-			Unit:  "",
-		})
+	pathsMetic := Metric{
+		Key:   "pipeline_resolver_execution_paths_total",
+		Name:  "Total number of pipeline resolver execution paths",
+		Value: float64(executionPathsTotal),
+		Unit:  "",
 	}
+	if executionPathsTotal < 0 {
+		pathsMetic.Error = errors.New("overflow detected")
+	}
+	metrics = append(metrics, pathsMetic)
 
 	// TailorDB Metrics
 	metrics = append(metrics, Metric{
