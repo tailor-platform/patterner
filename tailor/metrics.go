@@ -9,19 +9,56 @@ const (
 )
 
 type Metric struct {
-	Name        string
-	Description string
-	Value       float64
+	Key   string
+	Name  string
+	Value float64
+	Unit  string
 }
 
 func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 	var metrics []Metric
 
+	// Coverage Metrics
+	coverage, err := c.Coverage(resources)
+	if err != nil {
+		return nil, err
+	}
+	var total, covered int
+	for _, rc := range coverage {
+		total += rc.TotalSteps
+		covered += rc.CoveredSteps
+	}
+	var coverTotal float64
+	if total > 0 {
+		coverTotal = float64(float64(covered)/float64(total)) * 100
+	} else {
+		coverTotal = 0
+	}
+	metrics = append(metrics, Metric{
+		Key:   "pipeline_resolver_step_coverage_percentage",
+		Name:  "Pipeline resolver step coverage",
+		Value: coverTotal,
+		Unit:  "%",
+	})
+
+	// Lint Metrics
+	warns, err := c.Lint(resources)
+	if err != nil {
+		return nil, err
+	}
+	metrics = append(metrics, Metric{
+		Key:   "lint_warnings_total",
+		Name:  "Total number of lint warnings",
+		Value: float64(len(warns)),
+		Unit:  "",
+	})
+
 	// Pipeline Metrics
 	metrics = append(metrics, Metric{
-		Name:        "pipelines_total",
-		Description: "Total number of pipelines",
-		Value:       float64(len(resources.Pipelines)),
+		Key:   "pipelines_total",
+		Name:  "Total number of pipelines",
+		Value: float64(len(resources.Pipelines)),
+		Unit:  "",
 	})
 	resolversTotal := 0
 	stepsTotal := 0
@@ -40,26 +77,30 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 		}
 	}
 	metrics = append(metrics, Metric{
-		Name:        "pipeline_resolvers_total",
-		Description: "Total number of pipeline resolvers",
-		Value:       float64(resolversTotal),
+		Key:   "pipeline_resolvers_total",
+		Name:  "Total number of pipeline resolvers",
+		Value: float64(resolversTotal),
+		Unit:  "",
 	})
 	metrics = append(metrics, Metric{
-		Name:        "pipeline_resolver_steps_total",
-		Description: "Total number of pipeline resolver steps",
-		Value:       float64(stepsTotal),
+		Key:   "pipeline_resolver_steps_total",
+		Name:  "Total number of pipeline resolver steps",
+		Value: float64(stepsTotal),
+		Unit:  "",
 	})
 	metrics = append(metrics, Metric{
-		Name:        "pipeline_resolver_execution_paths_total",
-		Description: "Total number of pipeline resolver execution paths",
-		Value:       float64(executionPathsTotal),
+		Key:   "pipeline_resolver_execution_paths_total",
+		Name:  "Total number of pipeline resolver execution paths",
+		Value: float64(executionPathsTotal),
+		Unit:  "",
 	})
 
 	// TailorDB Metrics
 	metrics = append(metrics, Metric{
-		Name:        "tailordbs_total",
-		Description: "Total number of TailorDBs",
-		Value:       float64(len(resources.TailorDBs)),
+		Key:   "tailordbs_total",
+		Name:  "Total number of TailorDBs",
+		Value: float64(len(resources.TailorDBs)),
+		Unit:  "",
 	})
 	typesTotal := 0
 	fieldsTotal := 0
@@ -70,21 +111,24 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 		}
 	}
 	metrics = append(metrics, Metric{
-		Name:        "tailordb_types_total",
-		Description: "Total number of TailorDB types",
-		Value:       float64(typesTotal),
+		Key:   "tailordb_types_total",
+		Name:  "Total number of TailorDB types",
+		Value: float64(typesTotal),
+		Unit:  "",
 	})
 	metrics = append(metrics, Metric{
-		Name:        "tailordb_type_fields_total",
-		Description: "Total number of TailorDB type fields",
-		Value:       float64(fieldsTotal),
+		Key:   "tailordb_type_fields_total",
+		Name:  "Total number of TailorDB type fields",
+		Value: float64(fieldsTotal),
+		Unit:  "",
 	})
 
 	// StateFlow Metrics
 	metrics = append(metrics, Metric{
-		Name:        "stateflows_total",
-		Description: "Total number of StateFlows",
-		Value:       float64(len(resources.StateFlows)),
+		Key:   "stateflows_total",
+		Name:  "Total number of StateFlows",
+		Value: float64(len(resources.StateFlows)),
+		Unit:  "",
 	})
 
 	return metrics, nil

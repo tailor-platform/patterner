@@ -19,14 +19,16 @@ func TestClient_Metrics(t *testing.T) {
 				StateFlows:   []*StateFlow{},
 			},
 			expectedMetrics: map[string]float64{
-				"pipelines_total":                         0,
-				"pipeline_resolvers_total":                0,
-				"pipeline_resolver_steps_total":           0,
-				"pipeline_resolver_execution_paths_total": 0, // 0 resolvers = 0 paths
-				"tailordbs_total":                         0,
-				"tailordb_types_total":                    0,
-				"tailordb_type_fields_total":              0,
-				"stateflows_total":                        0,
+				"pipeline_resolver_step_coverage_percentage": 0,
+				"lint_warnings_total":                        0,
+				"pipelines_total":                            0,
+				"pipeline_resolvers_total":                   0,
+				"pipeline_resolver_steps_total":              0,
+				"pipeline_resolver_execution_paths_total":    0, // 0 resolvers = 0 paths
+				"tailordbs_total":                            0,
+				"tailordb_types_total":                       0,
+				"tailordb_type_fields_total":                 0,
+				"stateflows_total":                           0,
 			},
 		},
 		{
@@ -63,14 +65,16 @@ func TestClient_Metrics(t *testing.T) {
 				},
 			},
 			expectedMetrics: map[string]float64{
-				"pipelines_total":                         1,
-				"pipeline_resolvers_total":                1,
-				"pipeline_resolver_steps_total":           1,
-				"pipeline_resolver_execution_paths_total": 1, // 1 * 2^0 = 1 (1 step, no tests)
-				"tailordbs_total":                         1,
-				"tailordb_types_total":                    1,
-				"tailordb_type_fields_total":              2, // id and name fields
-				"stateflows_total":                        1,
+				"pipeline_resolver_step_coverage_percentage": 0, // no coverage data for test
+				"lint_warnings_total":                        1,
+				"pipelines_total":                            1,
+				"pipeline_resolvers_total":                   1,
+				"pipeline_resolver_steps_total":              1,
+				"pipeline_resolver_execution_paths_total":    1, // 1 * 2^0 = 1 (1 step, no tests)
+				"tailordbs_total":                            1,
+				"tailordb_types_total":                       1,
+				"tailordb_type_fields_total":                 2, // id and name fields
+				"stateflows_total":                           1,
 			},
 		},
 		{
@@ -150,14 +154,16 @@ func TestClient_Metrics(t *testing.T) {
 				},
 			},
 			expectedMetrics: map[string]float64{
-				"pipelines_total":                         2, // ns1, ns2
-				"pipeline_resolvers_total":                3, // resolver1, resolver2, resolver3
-				"pipeline_resolver_steps_total":           6, // 2+3+1 steps
-				"pipeline_resolver_execution_paths_total": 6, // 2*2^0 + 3*2^0 + 1*2^0 = 2+3+1 (no tests)
-				"tailordbs_total":                         2, // two TailorDB instances
-				"tailordb_types_total":                    3, // User, Post, Comment
-				"tailordb_type_fields_total":              9, // 3+2+4 fields
-				"stateflows_total":                        3, // flow1, flow2, flow3
+				"pipeline_resolver_step_coverage_percentage": 0, // no coverage data for test
+				"lint_warnings_total":                        3,
+				"pipelines_total":                            2, // ns1, ns2
+				"pipeline_resolvers_total":                   3, // resolver1, resolver2, resolver3
+				"pipeline_resolver_steps_total":              6, // 2+3+1 steps
+				"pipeline_resolver_execution_paths_total":    6, // 2*2^0 + 3*2^0 + 1*2^0 = 2+3+1 (no tests)
+				"tailordbs_total":                            2, // two TailorDB instances
+				"tailordb_types_total":                       3, // User, Post, Comment
+				"tailordb_type_fields_total":                 9, // 3+2+4 fields
+				"stateflows_total":                           3, // flow1, flow2, flow3
 			},
 		},
 		{
@@ -192,14 +198,16 @@ func TestClient_Metrics(t *testing.T) {
 				},
 			},
 			expectedMetrics: map[string]float64{
-				"pipelines_total":                         0,
-				"pipeline_resolvers_total":                0,
-				"pipeline_resolver_steps_total":           0,
-				"pipeline_resolver_execution_paths_total": 0, // 0 resolvers = 0 paths
-				"tailordbs_total":                         1,
-				"tailordb_types_total":                    1,
-				"tailordb_type_fields_total":              2, // Only top-level fields are counted
-				"stateflows_total":                        0,
+				"pipeline_resolver_step_coverage_percentage": 0,
+				"lint_warnings_total":                        0,
+				"pipelines_total":                            0,
+				"pipeline_resolvers_total":                   0,
+				"pipeline_resolver_steps_total":              0,
+				"pipeline_resolver_execution_paths_total":    0, // 0 resolvers = 0 paths
+				"tailordbs_total":                            1,
+				"tailordb_types_total":                       1,
+				"tailordb_type_fields_total":                 2, // Only top-level fields are counted
+				"stateflows_total":                           0,
 			},
 		},
 	}
@@ -226,7 +234,7 @@ func TestClient_Metrics(t *testing.T) {
 			// Create a map for easier assertion
 			metricMap := make(map[string]float64)
 			for _, m := range metrics {
-				metricMap[m.Name] = m.Value
+				metricMap[m.Key] = m.Value
 			}
 
 			// Verify all expected metrics are present
@@ -287,11 +295,8 @@ func TestClient_Metrics_MetricStructure(t *testing.T) {
 		if metric.Name == "" {
 			t.Error("Metric name should not be empty")
 		}
-		if metric.Description == "" {
-			t.Error("Metric description should not be empty")
-		}
-		if metric.Value < 0 {
-			t.Errorf("Metric value should be non-negative, got %f", metric.Value)
+		if metric.Key == "" {
+			t.Error("Metric key should not be empty")
 		}
 	}
 }
@@ -355,7 +360,7 @@ func TestClient_Metrics_SpecificMetricValues(t *testing.T) {
 	// Create metric lookup map
 	metricMap := make(map[string]Metric)
 	for _, m := range metrics {
-		metricMap[m.Name] = m
+		metricMap[m.Key] = m
 	}
 
 	// Test pipeline metrics
@@ -419,7 +424,7 @@ func TestClient_Metrics_EdgeCases(t *testing.T) {
 
 		metricMap := make(map[string]float64)
 		for _, m := range metrics {
-			metricMap[m.Name] = m.Value
+			metricMap[m.Key] = m.Value
 		}
 
 		// All counts should be 0
@@ -470,7 +475,7 @@ func TestClient_Metrics_EdgeCases(t *testing.T) {
 
 		metricMap := make(map[string]float64)
 		for _, m := range metrics {
-			metricMap[m.Name] = m.Value
+			metricMap[m.Key] = m.Value
 		}
 
 		if metricMap["pipelines_total"] != float64(2) {
@@ -506,7 +511,7 @@ func TestClient_Metrics_EdgeCases(t *testing.T) {
 
 		metricMap := make(map[string]float64)
 		for _, m := range metrics {
-			metricMap[m.Name] = m.Value
+			metricMap[m.Key] = m.Value
 		}
 
 		if metricMap["tailordbs_total"] != float64(2) {
@@ -545,7 +550,7 @@ func TestClient_Metrics_EdgeCases(t *testing.T) {
 
 		metricMap := make(map[string]float64)
 		for _, m := range metrics {
-			metricMap[m.Name] = m.Value
+			metricMap[m.Key] = m.Value
 		}
 
 		if metricMap["tailordbs_total"] != float64(1) {
@@ -578,7 +583,9 @@ func TestClient_Metrics_MetricNames(t *testing.T) {
 		t.Fatalf("Unexpected error: %v", err)
 	}
 
-	expectedMetricNames := []string{
+	expectedMetricKeys := []string{
+		"pipeline_resolver_step_coverage_percentage",
+		"lint_warnings_total",
 		"pipelines_total",
 		"pipeline_resolvers_total",
 		"pipeline_resolver_steps_total",
@@ -589,31 +596,31 @@ func TestClient_Metrics_MetricNames(t *testing.T) {
 		"stateflows_total",
 	}
 
-	actualNames := make([]string, len(metrics))
+	actualKeys := make([]string, len(metrics))
 	for i, m := range metrics {
-		actualNames[i] = m.Name
+		actualKeys[i] = m.Key
 	}
 
-	// Check that we have all expected metric names
-	for _, expectedName := range expectedMetricNames {
+	// Check that we have all expected metric keys
+	for _, expectedKey := range expectedMetricKeys {
 		found := false
-		for _, actualName := range actualNames {
-			if actualName == expectedName {
+		for _, actualKey := range actualKeys {
+			if actualKey == expectedKey {
 				found = true
 				break
 			}
 		}
 		if !found {
-			t.Errorf("Expected metric %s not found", expectedName)
+			t.Errorf("Expected metric %s not found", expectedKey)
 		}
 	}
 
-	if len(expectedMetricNames) != len(actualNames) {
-		t.Errorf("Expected %d metrics, got %d", len(expectedMetricNames), len(actualNames))
+	if len(expectedMetricKeys) != len(actualKeys) {
+		t.Errorf("Expected %d metrics, got %d", len(expectedMetricKeys), len(actualKeys))
 	}
 }
 
-func TestClient_Metrics_MetricDescriptions(t *testing.T) {
+func TestClient_Metrics_MetricFields(t *testing.T) {
 	cfg := createTestConfig(t)
 	client, err := New(cfg)
 	if err != nil {
@@ -631,44 +638,50 @@ func TestClient_Metrics_MetricDescriptions(t *testing.T) {
 		t.Fatalf("Unexpected error: %v", err)
 	}
 
-	expectedDescriptions := map[string]string{
-		"pipelines_total":                         "Total number of pipelines",
-		"pipeline_resolvers_total":                "Total number of pipeline resolvers",
-		"pipeline_resolver_steps_total":           "Total number of pipeline resolver steps",
-		"pipeline_resolver_execution_paths_total": "Total number of pipeline resolver execution paths",
-		"tailordbs_total":                         "Total number of TailorDBs",
-		"tailordb_types_total":                    "Total number of TailorDB types",
-		"tailordb_type_fields_total":              "Total number of TailorDB type fields",
-		"stateflows_total":                        "Total number of StateFlows",
+	expectedKeys := map[string]string{
+		"pipeline_resolver_step_coverage_percentage": "pipeline_resolver_step_coverage_percentage",
+		"lint_warnings_total":                        "lint_warnings_total",
+		"pipelines_total":                            "pipelines_total",
+		"pipeline_resolvers_total":                   "pipeline_resolvers_total",
+		"pipeline_resolver_steps_total":              "pipeline_resolver_steps_total",
+		"pipeline_resolver_execution_paths_total":    "pipeline_resolver_execution_paths_total",
+		"tailordbs_total":                            "tailordbs_total",
+		"tailordb_types_total":                       "tailordb_types_total",
+		"tailordb_type_fields_total":                 "tailordb_type_fields_total",
+		"stateflows_total":                           "stateflows_total",
 	}
 
 	for _, metric := range metrics {
-		expectedDesc, exists := expectedDescriptions[metric.Name]
+		expectedKey, exists := expectedKeys[metric.Key]
 		if !exists {
-			t.Errorf("Unexpected metric: %s", metric.Name)
+			t.Errorf("Unexpected metric: %s", metric.Key)
 		}
-		if expectedDesc != metric.Description {
-			t.Errorf("Wrong description for metric %s: expected '%s', got '%s'",
-				metric.Name, expectedDesc, metric.Description)
+		if expectedKey != metric.Key {
+			t.Errorf("Wrong key for metric %s: expected '%s', got '%s'",
+				metric.Key, expectedKey, metric.Key)
 		}
 	}
 }
 
 func TestMetric_Fields(t *testing.T) {
 	metric := Metric{
-		Name:        "test_metric",
-		Description: "Test metric description",
-		Value:       42.5,
+		Key:   "test_metric",
+		Name:  "Test Metric",
+		Value: 42.5,
+		Unit:  "count",
 	}
 
-	if metric.Name != "test_metric" {
-		t.Errorf("Expected Name to be 'test_metric', got '%s'", metric.Name)
+	if metric.Key != "test_metric" {
+		t.Errorf("Expected Key to be 'test_metric', got '%s'", metric.Key)
 	}
-	if metric.Description != "Test metric description" {
-		t.Errorf("Expected Description to be 'Test metric description', got '%s'", metric.Description)
+	if metric.Name != "Test Metric" {
+		t.Errorf("Expected Name to be 'Test Metric', got '%s'", metric.Name)
 	}
 	if metric.Value != 42.5 {
 		t.Errorf("Expected Value to be 42.5, got %f", metric.Value)
+	}
+	if metric.Unit != "count" {
+		t.Errorf("Expected Unit to be 'count', got '%s'", metric.Unit)
 	}
 }
 
@@ -712,7 +725,7 @@ func TestClient_Metrics_LargeNumbers(t *testing.T) {
 
 	metricMap := make(map[string]float64)
 	for _, m := range metrics {
-		metricMap[m.Name] = m.Value
+		metricMap[m.Key] = m.Value
 	}
 
 	// Verify calculations
@@ -968,7 +981,7 @@ func TestClient_Metrics_ExecutionPaths(t *testing.T) {
 			// Create a map for easier assertion
 			metricMap := make(map[string]float64)
 			for _, m := range metrics {
-				metricMap[m.Name] = m.Value
+				metricMap[m.Key] = m.Value
 			}
 
 			// Verify expected metrics
@@ -1034,7 +1047,7 @@ func TestClient_Metrics_ExecutionPaths_EdgeCases(t *testing.T) {
 
 		metricMap := make(map[string]float64)
 		for _, m := range metrics {
-			metricMap[m.Name] = m.Value
+			metricMap[m.Key] = m.Value
 		}
 
 		// Expected: 3 steps, 2 tests (one empty string doesn't count, whitespace does count)
@@ -1074,7 +1087,7 @@ func TestClient_Metrics_ExecutionPaths_EdgeCases(t *testing.T) {
 
 		metricMap := make(map[string]float64)
 		for _, m := range metrics {
-			metricMap[m.Name] = m.Value
+			metricMap[m.Key] = m.Value
 		}
 
 		// Expected: 1 step, 1 test -> 1 * 2^1 = 2

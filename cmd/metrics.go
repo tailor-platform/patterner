@@ -24,7 +24,9 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
+	"github.com/k1LoW/duration"
 	"github.com/spf13/cobra"
 	"github.com/tailor-platform/patterner/config"
 	"github.com/tailor-platform/patterner/tailor"
@@ -49,7 +51,12 @@ var metricsCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		resources, err := c.Resources(cmd.Context())
+		d, err := duration.Parse(since)
+		if err != nil {
+			return err
+		}
+		s := time.Now().Add(-d)
+		resources, err := c.Resources(cmd.Context(), tailor.WithExecutionResults(&s))
 		if err != nil {
 			return err
 		}
@@ -69,4 +76,5 @@ var metricsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(metricsCmd)
+	metricsCmd.Flags().StringVarP(&since, "since", "s", "30min", "only consider executions since the given duration (e.g., 24hours, 30min, 15sec)")
 }
