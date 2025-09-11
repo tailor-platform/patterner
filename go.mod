@@ -12,7 +12,7 @@ require (
 	github.com/k1LoW/duration v1.2.0
 	github.com/spf13/cobra v1.10.1
 	github.com/vektah/gqlparser/v2 v2.5.14
-	google.golang.org/protobuf v1.36.8
+	google.golang.org/protobuf v1.36.9
 )
 
 require (
