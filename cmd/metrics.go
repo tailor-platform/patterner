@@ -22,6 +22,7 @@ THE SOFTWARE.
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"os"
@@ -35,6 +36,8 @@ import (
 	"github.com/tailor-platform/patterner/config"
 	"github.com/tailor-platform/patterner/tailor"
 )
+
+var outOctocovPath string
 
 var metricsCmd = &cobra.Command{
 	Use:   "metrics",
@@ -126,6 +129,35 @@ var metricsCmd = &cobra.Command{
 		if err := table.Render(); err != nil {
 			return err
 		}
+		if outOctocovPath != "" {
+			metricSet := &CustomMetricSet{
+				Key:  "workspace_metrics",
+				Name: "Workspace metrics using [Patterner](https://github.com/tailor-platform/patterner)",
+				Metadata: []*MetadataKV{
+					{
+						Key:   "workspace_id",
+						Value: cfg.WorkspaceID,
+					},
+				},
+			}
+			for _, m := range metrics {
+				metricSet.Metrics = append(metricSet.Metrics, &CustomMetric{
+					Key:   m.Key,
+					Name:  m.Name,
+					Value: m.Value,
+					Unit:  m.Unit,
+				})
+			}
+			csets := []*CustomMetricSet{metricSet}
+			b, err := json.MarshalIndent(csets, "", "  ")
+			if err != nil {
+				return err
+			}
+			if err := os.WriteFile(outOctocovPath, b, 0644); err != nil {
+				return err
+			}
+		}
+
 		return nil
 	},
 }
@@ -133,4 +165,27 @@ var metricsCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(metricsCmd)
 	metricsCmd.Flags().StringVarP(&since, "since", "s", "30min", "only consider executions since the given duration (e.g., 24hours, 30min, 15sec)")
+	metricsCmd.Flags().StringVarP(&outOctocovPath, "out-octocov-path", "", "", "output the metrics in octocov custom metrics format to the specified file (e.g., ./metrics.json)")
+}
+
+// copy from github.com/k1LoW/octocov/report
+// because octocov use tablewriter v0
+type MetadataKV struct {
+	Key   string `json:"key"`
+	Name  string `json:"name,omitempty"`
+	Value string `json:"value"`
+}
+
+type CustomMetricSet struct {
+	Key      string          `json:"key"`
+	Name     string          `json:"name,omitempty"`
+	Metadata []*MetadataKV   `json:"metadata,omitempty"`
+	Metrics  []*CustomMetric `json:"metrics"`
+}
+
+type CustomMetric struct {
+	Key   string  `json:"key"`
+	Name  string  `json:"name,omitempty"`
+	Value float64 `json:"value"`
+	Unit  string  `json:"unit,omitempty"`
 }
