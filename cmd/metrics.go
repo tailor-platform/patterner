@@ -206,7 +206,7 @@ func init() {
 	rootCmd.AddCommand(metricsCmd)
 	metricsCmd.Flags().StringVarP(&since, "since", "s", "30min", "only consider executions since the given duration (e.g., 24hours, 30min, 15sec)")
 	metricsCmd.Flags().StringVarP(&outOctocovPath, "out-octocov-path", "", "", "output the metrics in octocov custom metrics format to the specified file (e.g., ./metrics.json)")
-	metricsCmd.Flags().BoolVarP(&withLintWarnings, "with-lint-wanings", "", false, "display the lint warnings along with the metrics")
+	metricsCmd.Flags().BoolVarP(&withLintWarnings, "with-lint-warnings", "", false, "display the lint warnings along with the metrics")
 	metricsCmd.Flags().BoolVarP(&withCoverageFullReport, "with-coverage-full-report", "", false, "display the coverage full report along with the metrics")
 }
 
