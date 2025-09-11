@@ -86,6 +86,18 @@ The metrics command displays metrics in a table format. Use the `--out-octocov-p
 - `--since, -s` (default: "30min") - Analyze execution results since the specified time period
 - `--out-octocov-path` - Output metrics in octocov custom metrics format to the specified file
 - `--with-lint-warnings` (default: false) - Display lint warnings along with metrics output
+- `--with-coverage-full-report` (default: false) - Display detailed pipeline resolver step coverage along with metrics output
+
+##### Option Details
+
+**--with-coverage-full-report vs --with-lint-warnings:**
+- `--with-coverage-full-report`: Displays detailed pipeline resolver step coverage information for execution quality monitoring
+  - Shows coverage percentage and executed steps count for each resolver
+  - Format: `Coverage Rate% [Executed Steps/Total Steps] Resolver Name`
+- `--with-lint-warnings`: Displays detailed lint warnings list for code quality monitoring
+  - Shows specific lint issues and recommendations for code improvements
+
+Both options can be used together to provide comprehensive analysis combining execution quality and code quality insights.
 
 #### Usage Examples
 
@@ -99,11 +111,17 @@ patterner metrics --since 1hour
 # Display metrics with lint warnings
 patterner metrics --with-lint-warnings
 
+# Display metrics with coverage details
+patterner metrics --with-coverage-full-report
+
+# Display metrics with both coverage and lint warnings
+patterner metrics --with-coverage-full-report --with-lint-warnings
+
 # Output metrics to octocov custom metrics file
 patterner metrics --out-octocov-path metrics.json
 
-# Metrics for the past 24 hours with octocov output and lint warnings
-patterner metrics --since 24hours --out-octocov-path metrics.json --with-lint-warnings
+# Comprehensive analysis with all options
+patterner metrics --since 24hours --out-octocov-path metrics.json --with-coverage-full-report --with-lint-warnings
 ```
 
 **Implementation Notes:**
@@ -172,30 +190,35 @@ The following metrics are collected and displayed:
 
 **Pipeline Metrics:**
 
-- `pipelines_total` - Total number of pipelines
-- `pipeline_resolvers_total` - Total number of pipeline resolvers
-- `pipeline_resolver_steps_total` - Total number of pipeline resolver steps
-- `pipeline_resolver_execution_paths_total` - Total number of pipeline resolver execution paths
-  - Calculated based on the number of steps and tests in each resolver (steps \* 2^tests)
+- `pipelines_total` - Total number of pipelines (Unit: count)
+- `pipeline_resolvers_total` - Total number of pipeline resolvers (Unit: count)
+- `pipeline_resolver_steps_total` - Total number of pipeline resolver steps (Unit: count)
+- `pipeline_resolver_execution_paths_total` - Total number of pipeline resolver execution paths (Unit: count)
+  - Calculation: Based on the number of steps and tests in each resolver (steps \* 2^tests)
+  - Includes overflow detection: Reports error if negative values are encountered
   - Used to understand the total number of execution paths based on testable step combinations
 
 **TailorDB Metrics:**
 
-- `tailordbs_total` - Total number of TailorDBs
-- `tailordb_types_total` - Total number of TailorDB types
-- `tailordb_type_fields_total` - Total number of TailorDB type fields
+- `tailordbs_total` - Total number of TailorDBs (Unit: count)
+- `tailordb_types_total` - Total number of TailorDB types (Unit: count)
+- `tailordb_type_fields_total` - Total number of TailorDB type fields (Unit: count)
 
 **StateFlow Metrics:**
 
-- `stateflows_total` - Total number of StateFlows
+- `stateflows_total` - Total number of StateFlows (Unit: count)
 
 **Coverage Metrics:**
 
-- `pipeline_resolver_step_coverage_percentage` - Pipeline resolver step coverage percentage
+- `pipeline_resolver_step_coverage_percentage` - Pipeline resolver step coverage (Unit: %)
+  - Calculation: (covered steps / total steps) * 100
+  - Provides percentage representation of pipeline resolver step execution coverage
 
 **Lint Metrics:**
 
-- `lint_warnings_total` - Total number of lint warnings
+- `lint_warnings_total` - Total number of lint warnings (Unit: count)
+  - Calculation: Number of warnings returned from the lint function
+  - Helps monitor code quality and adherence to best practices
 
 ## Configuration
 
@@ -289,6 +312,7 @@ lint:
   - `--since, -s` (default: "30min") - Analyze execution results since the specified time period
   - `--out-octocov-path` - Output metrics in octocov custom metrics format to the specified file
   - `--with-lint-warnings` - Display lint warnings along with metrics output
+  - `--with-coverage-full-report` - Display detailed pipeline resolver step coverage along with metrics output
 - `patterner coverage` - Display pipeline resolver step coverage
 
 ---

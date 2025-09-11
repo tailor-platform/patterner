@@ -38,8 +38,9 @@ import (
 )
 
 var (
-	outOctocovPath   string
-	withLintWarnings bool
+	outOctocovPath         string
+	withLintWarnings       bool
+	withCoverageFullReport bool
 )
 
 var metricsCmd = &cobra.Command{
@@ -73,6 +74,8 @@ var metricsCmd = &cobra.Command{
 		spi.Disable()
 
 		if withLintWarnings {
+			fmt.Println("Lint warnings")
+			fmt.Println("============================================================")
 			warns, err := c.Lint(resources)
 			if err != nil {
 				return err
@@ -81,6 +84,28 @@ var metricsCmd = &cobra.Command{
 				fmt.Printf("[%s] %s: %s\n", w.Type, w.Name, w.Message)
 			}
 			fmt.Println()
+		}
+
+		if withCoverageFullReport {
+			fmt.Println("Coverage")
+			fmt.Println("============================================================")
+			coverages, err := c.Coverage(resources)
+			if err != nil {
+				return err
+			}
+			for _, rc := range coverages {
+				var cover float64
+				if rc.TotalSteps > 0 {
+					cover = float64(float64(rc.CoveredSteps)/float64(rc.TotalSteps)) * 100
+				}
+				fmt.Printf("%5s%% [%d/%d] %s\n", fmt.Sprintf("%.1f", cover), rc.CoveredSteps, rc.TotalSteps, rc.Name)
+			}
+			fmt.Println()
+		}
+
+		if withCoverageFullReport || withLintWarnings {
+			fmt.Println("Metrics")
+			fmt.Println("============================================================")
 		}
 
 		metrics, err := c.Metrics(resources)
@@ -182,10 +207,11 @@ func init() {
 	metricsCmd.Flags().StringVarP(&since, "since", "s", "30min", "only consider executions since the given duration (e.g., 24hours, 30min, 15sec)")
 	metricsCmd.Flags().StringVarP(&outOctocovPath, "out-octocov-path", "", "", "output the metrics in octocov custom metrics format to the specified file (e.g., ./metrics.json)")
 	metricsCmd.Flags().BoolVarP(&withLintWarnings, "with-lint-wanings", "", false, "display the lint warnings along with the metrics")
+	metricsCmd.Flags().BoolVarP(&withCoverageFullReport, "with-coverage-full-report", "", false, "display the coverage full report along with the metrics")
 }
 
 // copy from github.com/k1LoW/octocov/report
-// because octocov use tablewriter v0
+// because octocov use tablewriter v0.
 type MetadataKV struct {
 	Key   string `json:"key"`
 	Name  string `json:"name,omitempty"`
