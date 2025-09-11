@@ -110,6 +110,10 @@ var metricsCmd = &cobra.Command{
 		)
 		data := make([][]string, 0, len(metrics))
 		for _, m := range metrics {
+			if m.Error != nil {
+				data = append(data, []string{m.Name, fmt.Sprintf("Error: %v", m.Error)})
+				continue
+			}
 			if m.Value == (math.Round(m.Value*10) / 10) {
 				data = append(data, []string{m.Name, fmt.Sprintf("%.0f%s", m.Value, m.Unit)})
 			} else {

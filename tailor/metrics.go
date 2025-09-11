@@ -1,6 +1,7 @@
 package tailor
 
 import (
+	"errors"
 	"math"
 )
 
@@ -13,6 +14,7 @@ type Metric struct {
 	Name  string
 	Value float64
 	Unit  string
+	Error error
 }
 
 func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
@@ -88,12 +90,22 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 		Value: float64(stepsTotal),
 		Unit:  "",
 	})
-	metrics = append(metrics, Metric{
-		Key:   "pipeline_resolver_execution_paths_total",
-		Name:  "Total number of pipeline resolver execution paths",
-		Value: float64(executionPathsTotal),
-		Unit:  "",
-	})
+	if executionPathsTotal < 0 {
+		metrics = append(metrics, Metric{
+			Key:   "pipeline_resolver_execution_paths_total",
+			Name:  "Total number of pipeline resolver execution paths",
+			Value: float64(executionPathsTotal),
+			Unit:  "",
+			Error: errors.New("overflow detected"),
+		})
+	} else {
+		metrics = append(metrics, Metric{
+			Key:   "pipeline_resolver_execution_paths_total",
+			Name:  "Total number of pipeline resolver execution paths",
+			Value: float64(executionPathsTotal),
+			Unit:  "",
+		})
+	}
 
 	// TailorDB Metrics
 	metrics = append(metrics, Metric{
