@@ -77,7 +77,10 @@ var coverageCmd = &cobra.Command{
 		var total, covered int
 		for _, rc := range coverage {
 			if fullReport {
-				cover := float64(float64(rc.CoveredSteps)/float64(rc.TotalSteps)) * 100
+				var cover float64
+				if rc.TotalSteps > 0 {
+					cover = float64(float64(rc.CoveredSteps)/float64(rc.TotalSteps)) * 100
+				}
 				fmt.Printf("%5s%% [%d/%d] %s\n", fmt.Sprintf("%.1f", cover), rc.CoveredSteps, rc.TotalSteps, rc.Name)
 			}
 			total += rc.TotalSteps
@@ -86,7 +89,11 @@ var coverageCmd = &cobra.Command{
 		if fullReport {
 			fmt.Println()
 		}
-		fmt.Printf("%s %.1f%% [%d/%d]\n", "Pipeline Resolver Step Coverage", float64(float64(covered)/float64(total))*100, covered, total)
+		var coverTotal float64
+		if total > 0 {
+			coverTotal = float64(float64(covered)/float64(total)) * 100
+		}
+		fmt.Printf("%s %.1f%% [%d/%d]\n", "Pipeline resolver step coverage", coverTotal, covered, total)
 
 		return nil
 	},
