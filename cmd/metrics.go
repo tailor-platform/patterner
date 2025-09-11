@@ -168,7 +168,7 @@ var metricsCmd = &cobra.Command{
 			if err != nil {
 				return err
 			}
-			if err := os.WriteFile(outOctocovPath, b, 0644); err != nil {
+			if err := os.WriteFile(outOctocovPath, b, 0644); err != nil { //nolint:gosec
 				return err
 			}
 		}

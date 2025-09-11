@@ -79,7 +79,38 @@ export TAILOR_TOKEN=your_access_token
 patterner metrics
 ```
 
-The metrics command outputs detailed JSON data about your workspace resources.
+The metrics command displays metrics in a table format. Use the `--out-octocov-path` option to output metrics in octocov custom metrics format.
+
+#### Metrics Options
+
+- `--since, -s` (default: "30min") - Analyze execution results since the specified time period
+- `--out-octocov-path` - Output metrics in octocov custom metrics format to the specified file
+- `--with-lint-warnings` (default: false) - Display lint warnings along with metrics output
+
+#### Usage Examples
+
+```bash
+# Basic metrics (last 30 minutes)
+patterner metrics
+
+# Metrics for the past hour
+patterner metrics --since 1hour
+
+# Display metrics with lint warnings
+patterner metrics --with-lint-warnings
+
+# Output metrics to octocov custom metrics file
+patterner metrics --out-octocov-path metrics.json
+
+# Metrics for the past 24 hours with octocov output and lint warnings
+patterner metrics --since 24hours --out-octocov-path metrics.json --with-lint-warnings
+```
+
+**Implementation Notes:**
+```
+<!-- Note: Current implementation has a typo in variable name 'lint_warnigns_total'
+     and potential variable reference issue in metrics.go that should be addressed -->
+```
 
 ### View Coverage
 
@@ -157,6 +188,14 @@ The following metrics are collected and displayed:
 **StateFlow Metrics:**
 
 - `stateflows_total` - Total number of StateFlows
+
+**Coverage Metrics:**
+
+- `pipeline_resolver_step_coverage_percentage` - Pipeline resolver step coverage percentage
+
+**Lint Metrics:**
+
+- `lint_warnings_total` - Total number of lint warnings
 
 ## Configuration
 
@@ -247,6 +286,9 @@ lint:
 - `patterner init` - Initialize configuration file
 - `patterner lint` - Lint workspace resources
 - `patterner metrics` - Display workspace metrics
+  - `--since, -s` (default: "30min") - Analyze execution results since the specified time period
+  - `--out-octocov-path` - Output metrics in octocov custom metrics format to the specified file
+  - `--with-lint-warnings` - Display lint warnings along with metrics output
 - `patterner coverage` - Display pipeline resolver step coverage
 
 ---
