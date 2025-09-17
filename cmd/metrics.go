@@ -188,6 +188,8 @@ var metricsCmd = &cobra.Command{
 					Unit:  m.Unit,
 				})
 			}
+			metricSet.Acceptables = append(metricSet.Acceptables, cfg.Metrics.Octocov.Acceptables...)
+
 			csets := []*CustomMetricSet{metricSet}
 			b, err := json.MarshalIndent(csets, "", "  ")
 			if err != nil {
@@ -219,10 +221,11 @@ type MetadataKV struct {
 }
 
 type CustomMetricSet struct {
-	Key      string          `json:"key"`
-	Name     string          `json:"name,omitempty"`
-	Metadata []*MetadataKV   `json:"metadata,omitempty"`
-	Metrics  []*CustomMetric `json:"metrics"`
+	Key         string          `json:"key"`
+	Name        string          `json:"name,omitempty"`
+	Metadata    []*MetadataKV   `json:"metadata,omitempty"`
+	Metrics     []*CustomMetric `json:"metrics"`
+	Acceptables []string        `json:"acceptables,omitempty"`
 }
 
 type CustomMetric struct {
