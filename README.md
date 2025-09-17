@@ -79,7 +79,7 @@ export TAILOR_TOKEN=your_access_token
 patterner metrics
 ```
 
-The metrics command displays metrics in a table format. Use the `--out-octocov-path` option to output metrics in octocov custom metrics format.
+The metrics command displays metrics in a table format. Use the `--out-octocov-path` option to output metrics in octocov custom metrics format with configurable acceptable thresholds.
 
 #### Metrics Options
 
@@ -122,6 +122,43 @@ patterner metrics --out-octocov-path metrics.json
 
 # Comprehensive analysis with all options
 patterner metrics --since 24hours --out-octocov-path metrics.json --with-coverage-full-report --with-lint-warnings
+```
+
+#### Octocov Custom Metrics Format
+
+When using the `--out-octocov-path` option, patterner outputs metrics in octocov custom metrics format. This format includes:
+
+- **Metrics data** - All collected metrics with their values and units
+- **Acceptable thresholds** - Configurable conditions that define acceptable metric values
+  - Configured via `metrics.octocov.acceptables` in `.patterner.yml`
+  - Used by [octocov](https://github.com/k1LoW/octocov) to evaluate whether metrics meet quality standards
+
+**Example octocov output:**
+```json
+[
+  {
+    "key": "patterner-metrics",
+    "name": "Patterner Metrics",
+    "metrics": [
+      {
+        "key": "pipeline_resolver_step_coverage_percentage",
+        "name": "Pipeline Resolver Step Coverage",
+        "value": 75.0,
+        "unit": "%"
+      },
+      {
+        "key": "lint_warnings_total",
+        "name": "Lint Warnings Total",
+        "value": 3,
+        "unit": "count"
+      }
+    ],
+    "acceptables": [
+      "pipeline_resolver_step_coverage_percentage >= 80",
+      "lint_warnings_total <= 5"
+    ]
+  }
+]
 ```
 
 **Implementation Notes:**
@@ -252,7 +289,24 @@ lint:
     stateflow:
       deprecatedFeature:
         enabled: true
+metrics:
+  octocov:
+    acceptables:
+      - "current.pipeline_resolver_step_coverage_percentage >= 80"
+      - "diff.lint_warnings_total <= 0"
 ```
+
+### Metrics Configuration
+
+#### Octocov Integration
+
+- **octocov** - Configuration for octocov custom metrics format output
+  - `acceptables` - List of acceptable threshold conditions for metrics
+    - Define minimum acceptable values for metrics in octocov format
+    - Used when outputting metrics with `--out-octocov-path` option
+    - Format: `"metric_name operator value"` (e.g., `"coverage_percentage >= 80"`)
+    - Supports various metrics including coverage percentages and lint warning counts
+    - Example: `["pipeline_resolver_step_coverage_percentage >= 80", "lint_warnings_total <= 5"]`
 
 ### Lint Configuration
 

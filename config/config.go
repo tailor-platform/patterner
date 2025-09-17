@@ -9,8 +9,9 @@ import (
 )
 
 type Config struct {
-	WorkspaceID string `default:"" yaml:"workspaceID,omitempty"`
-	Lint        Lint   `yaml:"lint,omitempty"`
+	WorkspaceID string  `default:"" yaml:"workspaceID,omitempty"`
+	Lint        Lint    `yaml:"lint,omitempty"`
+	Metrics     Metrics `yaml:"metrics,omitempty"`
 }
 
 type Lint struct {
@@ -27,7 +28,7 @@ type Rules struct {
 type Pipeline struct {
 	DeprecatedFeature     PipelineDeprecatedFeature `yaml:"deprecatedFeature,omitempty,omitzero"`
 	InsecureAuthorization InsecureAuthorization     `yaml:"insecureAuthorization,omitempty,omitzero"`
-	StepCount            StepCount                `yaml:"stepCount,omitempty,omitzero"`
+	StepCount             StepCount                 `yaml:"stepCount,omitempty,omitzero"`
 	MultipleMutations     MultipleMutations         `yaml:"multipleMutations,omitempty,omitzero"`
 	QueryBeforeMutation   QueryBeforeMutation       `yaml:"queryBeforeMutation,omitempty,omitzero"`
 }
@@ -74,6 +75,14 @@ type StateFlow struct {
 
 type StateFlowDeprecatedFeature struct {
 	Enabled bool `default:"true" yaml:"enabled,omitempty"`
+}
+
+type Metrics struct {
+	Octocov Octocov `yaml:"octocov,omitempty,omitzero"`
+}
+
+type Octocov struct {
+	Acceptables []string `yaml:"acceptables,omitempty"`
 }
 
 const Filename = ".patterner.yml"
