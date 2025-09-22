@@ -2,10 +2,12 @@ package tailor
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	tailorv1 "buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go/tailor/v1"
 	"connectrpc.com/connect"
+	"golang.org/x/sync/errgroup"
 )
 
 type Resources struct {
@@ -20,6 +22,8 @@ type Resources struct {
 	withoutPipeline       bool
 	withoutStateFlow      bool
 	executionResultsSince *time.Time
+
+	mu sync.Mutex
 }
 
 type Application struct {
@@ -171,246 +175,412 @@ func (c *Client) Resources(ctx context.Context, opts ...ResourceOption) (*Resour
 			return nil, err
 		}
 	}
+
+	// Create errgroup for top-level parallel execution
+	g, ctx := errgroup.WithContext(ctx)
+
 	// Pipeline Services
 	if !resources.withoutPipeline {
-		pageToken := ""
-		for {
-			res, err := c.client.ListPipelineServices(ctx, connect.NewRequest(&tailorv1.ListPipelineServicesRequest{
-				WorkspaceId: c.cfg.WorkspaceID,
-				PageSize:    pageSize,
-				PageToken:   pageToken,
-			}))
-			if err != nil {
-				return nil, err
-			}
-			for _, p := range res.Msg.GetPipelineServices() {
-				pipeline := &Pipeline{
-					NamespaceName: p.GetNamespace().GetName(),
-					CommonSDL:     p.GetCommonSdl(),
-				}
-				// Pipeline Resolvers
-				{
-					pageToken := ""
-					for {
-						res, err := c.client.ListPipelineResolvers(ctx, connect.NewRequest(&tailorv1.ListPipelineResolversRequest{
-							WorkspaceId:   c.cfg.WorkspaceID,
-							NamespaceName: p.GetNamespace().GetName(),
-							PageSize:      pageSize,
-							PageToken:     pageToken,
-						}))
-						if err != nil {
-							return nil, err
-						}
-						for _, r := range res.Msg.GetPipelineResolvers() {
-							res, err := c.client.GetPipelineResolver(ctx, connect.NewRequest(&tailorv1.GetPipelineResolverRequest{
-								WorkspaceId:   c.cfg.WorkspaceID,
-								NamespaceName: p.GetNamespace().GetName(),
-								ResolverName:  r.GetName(),
-							}))
-							if err != nil {
-								return nil, err
-							}
-							rr := res.Msg.GetPipelineResolver()
-							resolver := &PipelineResolver{
-								Name:          rr.GetName(),
-								Description:   rr.GetDescription(),
-								Authorization: rr.GetAuthorization(),
-								SDL:           rr.GetSdl(),
-								PreHook:       rr.GetPreHook().GetExpr(),
-								PreScript:     rr.GetPreScript(),
-								PostScript:    rr.GetPostScript(),
-								PostHook:      rr.GetPostHook().GetExpr(),
-							}
-							hasTest := false
-							for _, p := range rr.GetPipelines() {
-								step := &PipelineStep{
-									Name:           p.GetName(),
-									Description:    p.GetDescription(),
-									PreValidation:  p.GetPreValidation(),
-									PreScript:      p.GetPreScript(),
-									PreHook:        p.GetPreHook().GetExpr(),
-									PostScript:     p.GetPostScript(),
-									PostValidation: p.GetPostValidation(),
-									PostHook:       p.GetPostHook().GetExpr(),
-									Operation: PipelineStepOperation{
-										Type:    p.GetOperationType(),
-										Name:    p.GetOperationName(),
-										Invoker: p.GetInvoker(),
-										Source:  p.GetOperationSource(),
-										Test:    p.GetTest(),
-									},
-								}
-								if p.GetTest() != "" {
-									hasTest = true
-								}
-								resolver.Steps = append(resolver.Steps, step)
-							}
-
-							// Pipeline Resolvers Execution Results
-							if resources.executionResultsSince != nil {
-								pageToken := ""
-								view := tailorv1.PipelineResolverExecutionResultView_PIPELINE_RESOLVER_EXECUTION_RESULT_VIEW_BASIC
-								if hasTest {
-									// Because branching occurs, context information is required.
-									view = tailorv1.PipelineResolverExecutionResultView_PIPELINE_RESOLVER_EXECUTION_RESULT_VIEW_FULL
-								}
-							L:
-								for {
-									res, err := c.client.ListPipelineResolverExecutionResults(ctx, connect.NewRequest(&tailorv1.ListPipelineResolverExecutionResultsRequest{
-										WorkspaceId:   c.cfg.WorkspaceID,
-										NamespaceName: p.GetNamespace().GetName(),
-										ResolverName:  r.GetName(),
-										View:          view,
-										PageSize:      pageSize,
-										PageToken:     pageToken,
-									}))
-									if err != nil {
-										return nil, err
-									}
-									for _, r := range res.Msg.GetResults() {
-										if r.GetCreatedAt().AsTime().Before(*resources.executionResultsSince) {
-											// Since the results are ordered by CreatedAt descending,
-											// we can stop fetching more results once we reach an older entry.
-											pageToken = ""
-											break L
-										}
-										resolver.ExecutionResults = append(resolver.ExecutionResults, r)
-									}
-									if res.Msg.GetNextPageToken() == "" {
-										break
-									}
-									pageToken = res.Msg.GetNextPageToken()
-								}
-							}
-
-							pipeline.Resolvers = append(pipeline.Resolvers, resolver)
-						}
-						if res.Msg.GetNextPageToken() == "" {
-							break
-						}
-						pageToken = res.Msg.GetNextPageToken()
-					}
-				}
-				resources.Pipelines = append(resources.Pipelines, pipeline)
-			}
-			if res.Msg.GetNextPageToken() == "" {
-				break
-			}
-			pageToken = res.Msg.GetNextPageToken()
-		}
+		g.Go(func() error {
+			return c.fetchPipelineServices(ctx, resources)
+		})
 	}
 
 	// TailorDB Services
 	if !resources.withoutTailorDB {
-		pageToken := ""
-		for {
-			res, err := c.client.ListTailorDBServices(ctx, connect.NewRequest(&tailorv1.ListTailorDBServicesRequest{
-				WorkspaceId: c.cfg.WorkspaceID,
-				PageSize:    pageSize,
-				PageToken:   pageToken,
-			}))
-			if err != nil {
-				return nil, err
-			}
-			for _, t := range res.Msg.GetTailordbServices() {
-				tailordb := &TailorDB{
-					NamespaceName: t.GetNamespace().GetName(),
-				}
-				// TailorDB Types
-				{
-					pageToken := ""
-					for {
-						res, err := c.client.ListTailorDBTypes(ctx, connect.NewRequest(&tailorv1.ListTailorDBTypesRequest{
-							WorkspaceId:   c.cfg.WorkspaceID,
-							NamespaceName: t.GetNamespace().GetName(),
-							PageSize:      pageSize,
-							PageToken:     pageToken,
-						}))
-						if err != nil {
-							return nil, err
-						}
-						for _, tt := range res.Msg.GetTailordbTypes() {
-							res, err := c.client.GetTailorDBType(ctx, connect.NewRequest(&tailorv1.GetTailorDBTypeRequest{
-								WorkspaceId:      c.cfg.WorkspaceID,
-								NamespaceName:    t.GetNamespace().GetName(),
-								TailordbTypeName: tt.GetName(),
-							}))
-							if err != nil {
-								return nil, err
-							}
-							ttt := res.Msg.GetTailordbType()
-							tailordbType := &TailorDBType{
-								Name:        ttt.GetName(),
-								Description: ttt.GetSchema().GetDescription(),
-								Draft:       ttt.GetSchema().GetSettings().GetDraft(),
-							}
-							tailordbType.Fields = convertTailorDBFields(ttt.GetSchema().GetFields())
-							tailordb.Types = append(tailordb.Types, tailordbType)
-							if ttt.GetSchema().GetPermission() != nil {
-								tailordbType.Permission = &TailorDBPermission{}
-							}
-							if ttt.GetSchema().GetTypePermission() != nil {
-								tailordbType.TypePermission = &TailorDBTypePermission{}
-							}
-							if ttt.GetSchema().GetRecordPermission() != nil {
-								tailordbType.RecordPermission = &TailorDBRecordPermission{}
-							}
-							if _, err := c.client.GetTailorDBGQLPermission(ctx, connect.NewRequest(&tailorv1.GetTailorDBGQLPermissionRequest{
-								WorkspaceId:   c.cfg.WorkspaceID,
-								NamespaceName: t.GetNamespace().GetName(),
-								TypeName:      tt.GetName(),
-							})); err == nil {
-								tailordbType.GQLPermission = &TailorDBGQLPermission{}
-							}
-						}
-						if res.Msg.GetNextPageToken() == "" {
-							break
-						}
-						pageToken = res.Msg.GetNextPageToken()
-					}
-				}
-				resources.TailorDBs = append(resources.TailorDBs, tailordb)
-			}
-			if res.Msg.GetNextPageToken() == "" {
-				break
-			}
-			pageToken = res.Msg.GetNextPageToken()
-		}
+		g.Go(func() error {
+			return c.fetchTailorDBServices(ctx, resources)
+		})
 	}
 
 	// StateFlow Services
 	if !resources.withoutStateFlow {
-		pageToken := ""
-		for {
-			res, err := c.client.ListStateflowServices(ctx, connect.NewRequest(&tailorv1.ListStateflowServicesRequest{
-				WorkspaceId: c.cfg.WorkspaceID,
-				PageSize:    pageSize,
-				PageToken:   pageToken,
-			}))
-			if err != nil {
-				return nil, err
-			}
-			for _, s := range res.Msg.GetStateflowServices() {
-				stateflow := &StateFlow{
-					NamespaceName: s.GetNamespace().GetName(),
-				}
-				// StateFlow Admin Users
-				for _, admin := range s.GetAdminUsers() {
-					adminUser := &StateFlowAdminUser{
-						UserID: admin.GetUserId(),
-					}
-					stateflow.AdminUsers = append(stateflow.AdminUsers, adminUser)
-				}
-				resources.StateFlows = append(resources.StateFlows, stateflow)
-			}
-			if res.Msg.GetNextPageToken() == "" {
-				break
-			}
-			pageToken = res.Msg.GetNextPageToken()
-		}
+		g.Go(func() error {
+			return c.fetchStateFlowServices(ctx, resources)
+		})
+	}
+
+	// Wait for all services to complete
+	if err := g.Wait(); err != nil {
+		return nil, err
 	}
 
 	return resources, nil
+}
+
+// fetchPipelineServices fetches pipeline services in parallel.
+func (c *Client) fetchPipelineServices(ctx context.Context, resources *Resources) error {
+	pageToken := ""
+	for {
+		res, err := c.client.ListPipelineServices(ctx, connect.NewRequest(&tailorv1.ListPipelineServicesRequest{
+			WorkspaceId: c.cfg.WorkspaceID,
+			PageSize:    pageSize,
+			PageToken:   pageToken,
+		}))
+		if err != nil {
+			return err
+		}
+
+		// Process pipelines in parallel
+		g, ctx := errgroup.WithContext(ctx)
+		var pipelines []*Pipeline
+		var mu sync.Mutex
+
+		for _, p := range res.Msg.GetPipelineServices() {
+			g.Go(func() error {
+				pipeline := &Pipeline{
+					NamespaceName: p.GetNamespace().GetName(),
+					CommonSDL:     p.GetCommonSdl(),
+				}
+
+				if err := c.fetchPipelineResolvers(ctx, pipeline, p, resources); err != nil {
+					return err
+				}
+
+				mu.Lock()
+				pipelines = append(pipelines, pipeline)
+				mu.Unlock()
+				return nil
+			})
+		}
+
+		if err := g.Wait(); err != nil {
+			return err
+		}
+
+		// Thread-safe append to resources
+		resources.mu.Lock()
+		resources.Pipelines = append(resources.Pipelines, pipelines...)
+		resources.mu.Unlock()
+
+		if res.Msg.GetNextPageToken() == "" {
+			break
+		}
+		pageToken = res.Msg.GetNextPageToken()
+	}
+	return nil
+}
+
+// fetchPipelineResolvers fetches pipeline resolvers in parallel.
+func (c *Client) fetchPipelineResolvers(ctx context.Context, pipeline *Pipeline, p *tailorv1.PipelineService, resources *Resources) error {
+	pageToken := ""
+	for {
+		res, err := c.client.ListPipelineResolvers(ctx, connect.NewRequest(&tailorv1.ListPipelineResolversRequest{
+			WorkspaceId:   c.cfg.WorkspaceID,
+			NamespaceName: p.GetNamespace().GetName(),
+			PageSize:      pageSize,
+			PageToken:     pageToken,
+		}))
+		if err != nil {
+			return err
+		}
+
+		// Process resolvers in parallel
+		g, ctx := errgroup.WithContext(ctx)
+		var resolvers []*PipelineResolver
+		var mu sync.Mutex
+
+		for _, r := range res.Msg.GetPipelineResolvers() {
+			g.Go(func() error {
+				resolver, err := c.fetchPipelineResolverDetails(ctx, p, r, resources)
+				if err != nil {
+					return err
+				}
+
+				mu.Lock()
+				resolvers = append(resolvers, resolver)
+				mu.Unlock()
+				return nil
+			})
+		}
+
+		if err := g.Wait(); err != nil {
+			return err
+		}
+
+		pipeline.Resolvers = append(pipeline.Resolvers, resolvers...)
+
+		if res.Msg.GetNextPageToken() == "" {
+			break
+		}
+		pageToken = res.Msg.GetNextPageToken()
+	}
+	return nil
+}
+
+// fetchPipelineResolverDetails fetches pipeline resolver details.
+func (c *Client) fetchPipelineResolverDetails(ctx context.Context, p *tailorv1.PipelineService, r *tailorv1.PipelineResolver, resources *Resources) (*PipelineResolver, error) {
+	res, err := c.client.GetPipelineResolver(ctx, connect.NewRequest(&tailorv1.GetPipelineResolverRequest{
+		WorkspaceId:   c.cfg.WorkspaceID,
+		NamespaceName: p.GetNamespace().GetName(),
+		ResolverName:  r.GetName(),
+	}))
+	if err != nil {
+		return nil, err
+	}
+
+	rr := res.Msg.GetPipelineResolver()
+	resolver := &PipelineResolver{
+		Name:          rr.GetName(),
+		Description:   rr.GetDescription(),
+		Authorization: rr.GetAuthorization(),
+		SDL:           rr.GetSdl(),
+		PreHook:       rr.GetPreHook().GetExpr(),
+		PreScript:     rr.GetPreScript(),
+		PostScript:    rr.GetPostScript(),
+		PostHook:      rr.GetPostHook().GetExpr(),
+	}
+
+	hasTest := false
+	for _, p := range rr.GetPipelines() {
+		step := &PipelineStep{
+			Name:           p.GetName(),
+			Description:    p.GetDescription(),
+			PreValidation:  p.GetPreValidation(),
+			PreScript:      p.GetPreScript(),
+			PreHook:        p.GetPreHook().GetExpr(),
+			PostScript:     p.GetPostScript(),
+			PostValidation: p.GetPostValidation(),
+			PostHook:       p.GetPostHook().GetExpr(),
+			Operation: PipelineStepOperation{
+				Type:    p.GetOperationType(),
+				Name:    p.GetOperationName(),
+				Invoker: p.GetInvoker(),
+				Source:  p.GetOperationSource(),
+				Test:    p.GetTest(),
+			},
+		}
+		if p.GetTest() != "" {
+			hasTest = true
+		}
+		resolver.Steps = append(resolver.Steps, step)
+	}
+
+	// Pipeline Resolvers Execution Results
+	if resources.executionResultsSince != nil {
+		if err := c.fetchExecutionResults(ctx, resolver, p, r, hasTest, resources); err != nil {
+			return nil, err
+		}
+	}
+
+	return resolver, nil
+}
+
+// fetchExecutionResults fetches execution results for a resolver.
+func (c *Client) fetchExecutionResults(ctx context.Context, resolver *PipelineResolver, p *tailorv1.PipelineService, r *tailorv1.PipelineResolver, hasTest bool, resources *Resources) error {
+	pageToken := ""
+	view := tailorv1.PipelineResolverExecutionResultView_PIPELINE_RESOLVER_EXECUTION_RESULT_VIEW_BASIC
+	if hasTest {
+		// Because branching occurs, context information is required.
+		view = tailorv1.PipelineResolverExecutionResultView_PIPELINE_RESOLVER_EXECUTION_RESULT_VIEW_FULL
+	}
+
+L:
+	for {
+		res, err := c.client.ListPipelineResolverExecutionResults(ctx, connect.NewRequest(&tailorv1.ListPipelineResolverExecutionResultsRequest{
+			WorkspaceId:   c.cfg.WorkspaceID,
+			NamespaceName: p.GetNamespace().GetName(),
+			ResolverName:  r.GetName(),
+			View:          view,
+			PageSize:      pageSize,
+			PageToken:     pageToken,
+		}))
+		if err != nil {
+			return err
+		}
+		for _, r := range res.Msg.GetResults() {
+			if r.GetCreatedAt().AsTime().Before(*resources.executionResultsSince) {
+				// Since the results are ordered by CreatedAt descending,
+				// we can stop fetching more results once we reach an older entry.
+				break L
+			}
+			resolver.ExecutionResults = append(resolver.ExecutionResults, r)
+		}
+		if res.Msg.GetNextPageToken() == "" {
+			break
+		}
+		pageToken = res.Msg.GetNextPageToken()
+	}
+	return nil
+}
+
+// fetchTailorDBServices fetches TailorDB services in parallel.
+func (c *Client) fetchTailorDBServices(ctx context.Context, resources *Resources) error {
+	pageToken := ""
+	for {
+		res, err := c.client.ListTailorDBServices(ctx, connect.NewRequest(&tailorv1.ListTailorDBServicesRequest{
+			WorkspaceId: c.cfg.WorkspaceID,
+			PageSize:    pageSize,
+			PageToken:   pageToken,
+		}))
+		if err != nil {
+			return err
+		}
+
+		// Process TailorDB services in parallel
+		g, ctx := errgroup.WithContext(ctx)
+		var tailordbs []*TailorDB
+		var mu sync.Mutex
+
+		for _, t := range res.Msg.GetTailordbServices() {
+			g.Go(func() error {
+				tailordb := &TailorDB{
+					NamespaceName: t.GetNamespace().GetName(),
+				}
+
+				if err := c.fetchTailorDBTypes(ctx, tailordb, t); err != nil {
+					return err
+				}
+
+				mu.Lock()
+				tailordbs = append(tailordbs, tailordb)
+				mu.Unlock()
+				return nil
+			})
+		}
+
+		if err := g.Wait(); err != nil {
+			return err
+		}
+
+		// Thread-safe append to resources
+		resources.mu.Lock()
+		resources.TailorDBs = append(resources.TailorDBs, tailordbs...)
+		resources.mu.Unlock()
+
+		if res.Msg.GetNextPageToken() == "" {
+			break
+		}
+		pageToken = res.Msg.GetNextPageToken()
+	}
+	return nil
+}
+
+// fetchTailorDBTypes fetches TailorDB types in parallel.
+func (c *Client) fetchTailorDBTypes(ctx context.Context, tailordb *TailorDB, t *tailorv1.TailorDBService) error {
+	pageToken := ""
+	for {
+		res, err := c.client.ListTailorDBTypes(ctx, connect.NewRequest(&tailorv1.ListTailorDBTypesRequest{
+			WorkspaceId:   c.cfg.WorkspaceID,
+			NamespaceName: t.GetNamespace().GetName(),
+			PageSize:      pageSize,
+			PageToken:     pageToken,
+		}))
+		if err != nil {
+			return err
+		}
+
+		// Process types in parallel
+		g, ctx := errgroup.WithContext(ctx)
+		var types []*TailorDBType
+		var mu sync.Mutex
+
+		for _, tt := range res.Msg.GetTailordbTypes() {
+			g.Go(func() error {
+				tailordbType, err := c.fetchTailorDBTypeDetails(ctx, t, tt)
+				if err != nil {
+					return err
+				}
+
+				mu.Lock()
+				types = append(types, tailordbType)
+				mu.Unlock()
+				return nil
+			})
+		}
+
+		if err := g.Wait(); err != nil {
+			return err
+		}
+
+		tailordb.Types = append(tailordb.Types, types...)
+
+		if res.Msg.GetNextPageToken() == "" {
+			break
+		}
+		pageToken = res.Msg.GetNextPageToken()
+	}
+	return nil
+}
+
+// fetchTailorDBTypeDetails fetches TailorDB type details.
+func (c *Client) fetchTailorDBTypeDetails(ctx context.Context, t *tailorv1.TailorDBService, tt *tailorv1.TailorDBType) (*TailorDBType, error) {
+	res, err := c.client.GetTailorDBType(ctx, connect.NewRequest(&tailorv1.GetTailorDBTypeRequest{
+		WorkspaceId:      c.cfg.WorkspaceID,
+		NamespaceName:    t.GetNamespace().GetName(),
+		TailordbTypeName: tt.GetName(),
+	}))
+	if err != nil {
+		return nil, err
+	}
+
+	ttt := res.Msg.GetTailordbType()
+	tailordbType := &TailorDBType{
+		Name:        ttt.GetName(),
+		Description: ttt.GetSchema().GetDescription(),
+		Draft:       ttt.GetSchema().GetSettings().GetDraft(),
+	}
+	tailordbType.Fields = convertTailorDBFields(ttt.GetSchema().GetFields())
+
+	if ttt.GetSchema().GetPermission() != nil {
+		tailordbType.Permission = &TailorDBPermission{}
+	}
+	if ttt.GetSchema().GetTypePermission() != nil {
+		tailordbType.TypePermission = &TailorDBTypePermission{}
+	}
+	if ttt.GetSchema().GetRecordPermission() != nil {
+		tailordbType.RecordPermission = &TailorDBRecordPermission{}
+	}
+	if _, err := c.client.GetTailorDBGQLPermission(ctx, connect.NewRequest(&tailorv1.GetTailorDBGQLPermissionRequest{
+		WorkspaceId:   c.cfg.WorkspaceID,
+		NamespaceName: t.GetNamespace().GetName(),
+		TypeName:      tt.GetName(),
+	})); err == nil {
+		tailordbType.GQLPermission = &TailorDBGQLPermission{}
+	}
+
+	return tailordbType, nil
+}
+
+// fetchStateFlowServices fetches StateFlow services.
+func (c *Client) fetchStateFlowServices(ctx context.Context, resources *Resources) error {
+	pageToken := ""
+	for {
+		res, err := c.client.ListStateflowServices(ctx, connect.NewRequest(&tailorv1.ListStateflowServicesRequest{
+			WorkspaceId: c.cfg.WorkspaceID,
+			PageSize:    pageSize,
+			PageToken:   pageToken,
+		}))
+		if err != nil {
+			return err
+		}
+
+		var stateflows []*StateFlow
+		for _, s := range res.Msg.GetStateflowServices() {
+			stateflow := &StateFlow{
+				NamespaceName: s.GetNamespace().GetName(),
+			}
+			// StateFlow Admin Users
+			for _, admin := range s.GetAdminUsers() {
+				adminUser := &StateFlowAdminUser{
+					UserID: admin.GetUserId(),
+				}
+				stateflow.AdminUsers = append(stateflow.AdminUsers, adminUser)
+			}
+			stateflows = append(stateflows, stateflow)
+		}
+
+		// Thread-safe append to resources
+		resources.mu.Lock()
+		resources.StateFlows = append(resources.StateFlows, stateflows...)
+		resources.mu.Unlock()
+
+		if res.Msg.GetNextPageToken() == "" {
+			break
+		}
+		pageToken = res.Msg.GetNextPageToken()
+	}
+	return nil
 }
 
 // convertTailorDBFields converts proto FieldConfig map to TailorDBField slice.
