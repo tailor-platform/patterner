@@ -13,6 +13,7 @@ require (
 	github.com/olekukonko/tablewriter v1.0.9
 	github.com/spf13/cobra v1.10.1
 	github.com/vektah/gqlparser/v2 v2.5.30
+	golang.org/x/sync v0.17.0
 	google.golang.org/protobuf v1.36.9
 )
 
