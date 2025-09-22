@@ -208,7 +208,7 @@ func (c *Client) Resources(ctx context.Context, opts ...ResourceOption) (*Resour
 	return resources, nil
 }
 
-// fetchPipelineServices fetches pipeline services in parallel
+// fetchPipelineServices fetches pipeline services in parallel.
 func (c *Client) fetchPipelineServices(ctx context.Context, resources *Resources) error {
 	pageToken := ""
 	for {
@@ -261,7 +261,7 @@ func (c *Client) fetchPipelineServices(ctx context.Context, resources *Resources
 	return nil
 }
 
-// fetchPipelineResolvers fetches pipeline resolvers in parallel
+// fetchPipelineResolvers fetches pipeline resolvers in parallel.
 func (c *Client) fetchPipelineResolvers(ctx context.Context, pipeline *Pipeline, p *tailorv1.PipelineService, resources *Resources) error {
 	pageToken := ""
 	for {
@@ -308,7 +308,7 @@ func (c *Client) fetchPipelineResolvers(ctx context.Context, pipeline *Pipeline,
 	return nil
 }
 
-// fetchPipelineResolverDetails fetches pipeline resolver details
+// fetchPipelineResolverDetails fetches pipeline resolver details.
 func (c *Client) fetchPipelineResolverDetails(ctx context.Context, p *tailorv1.PipelineService, r *tailorv1.PipelineResolver, resources *Resources) (*PipelineResolver, error) {
 	res, err := c.client.GetPipelineResolver(ctx, connect.NewRequest(&tailorv1.GetPipelineResolverRequest{
 		WorkspaceId:   c.cfg.WorkspaceID,
@@ -366,7 +366,7 @@ func (c *Client) fetchPipelineResolverDetails(ctx context.Context, p *tailorv1.P
 	return resolver, nil
 }
 
-// fetchExecutionResults fetches execution results for a resolver
+// fetchExecutionResults fetches execution results for a resolver.
 func (c *Client) fetchExecutionResults(ctx context.Context, resolver *PipelineResolver, p *tailorv1.PipelineService, r *tailorv1.PipelineResolver, hasTest bool, resources *Resources) error {
 	pageToken := ""
 	view := tailorv1.PipelineResolverExecutionResultView_PIPELINE_RESOLVER_EXECUTION_RESULT_VIEW_BASIC
@@ -392,7 +392,6 @@ L:
 			if r.GetCreatedAt().AsTime().Before(*resources.executionResultsSince) {
 				// Since the results are ordered by CreatedAt descending,
 				// we can stop fetching more results once we reach an older entry.
-				pageToken = ""
 				break L
 			}
 			resolver.ExecutionResults = append(resolver.ExecutionResults, r)
@@ -405,7 +404,7 @@ L:
 	return nil
 }
 
-// fetchTailorDBServices fetches TailorDB services in parallel
+// fetchTailorDBServices fetches TailorDB services in parallel.
 func (c *Client) fetchTailorDBServices(ctx context.Context, resources *Resources) error {
 	pageToken := ""
 	for {
@@ -457,7 +456,7 @@ func (c *Client) fetchTailorDBServices(ctx context.Context, resources *Resources
 	return nil
 }
 
-// fetchTailorDBTypes fetches TailorDB types in parallel
+// fetchTailorDBTypes fetches TailorDB types in parallel.
 func (c *Client) fetchTailorDBTypes(ctx context.Context, tailordb *TailorDB, t *tailorv1.TailorDBService) error {
 	pageToken := ""
 	for {
@@ -504,7 +503,7 @@ func (c *Client) fetchTailorDBTypes(ctx context.Context, tailordb *TailorDB, t *
 	return nil
 }
 
-// fetchTailorDBTypeDetails fetches TailorDB type details
+// fetchTailorDBTypeDetails fetches TailorDB type details.
 func (c *Client) fetchTailorDBTypeDetails(ctx context.Context, t *tailorv1.TailorDBService, tt *tailorv1.TailorDBType) (*TailorDBType, error) {
 	res, err := c.client.GetTailorDBType(ctx, connect.NewRequest(&tailorv1.GetTailorDBTypeRequest{
 		WorkspaceId:      c.cfg.WorkspaceID,
@@ -543,7 +542,7 @@ func (c *Client) fetchTailorDBTypeDetails(ctx context.Context, t *tailorv1.Tailo
 	return tailordbType, nil
 }
 
-// fetchStateFlowServices fetches StateFlow services
+// fetchStateFlowServices fetches StateFlow services.
 func (c *Client) fetchStateFlowServices(ctx context.Context, resources *Resources) error {
 	pageToken := ""
 	for {
