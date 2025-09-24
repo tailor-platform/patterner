@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.7.0](https://github.com/tailor-platform/patterner/compare/v0.6.0...v0.7.0) - 2025-09-24
+### New Features 🎉
+- feat: add parallel fetching for services by @k1LoW in https://github.com/tailor-platform/patterner/pull/32
+### Other Changes
+- fix(deps): update module github.com/olekukonko/tablewriter to v1.1.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/31
+
 ## [v0.6.0](https://github.com/tailor-platform/patterner/compare/v0.5.0...v0.6.0) - 2025-09-17
 ### New Features 🎉
 - feat: add support for configurable acceptable thresholds in octocov output by @k1LoW in https://github.com/tailor-platform/patterner/pull/29
