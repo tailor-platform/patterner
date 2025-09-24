@@ -58,7 +58,7 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 	// Pipeline Metrics
 	metrics = append(metrics, Metric{
 		Key:   "pipelines_total",
-		Name:  "Total number of pipelines",
+		Name:  "Total number of Pipelines",
 		Value: float64(len(resources.Pipelines)),
 		Unit:  "",
 	})
@@ -80,19 +80,19 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 	}
 	metrics = append(metrics, Metric{
 		Key:   "pipeline_resolvers_total",
-		Name:  "Total number of pipeline resolvers",
+		Name:  "Total number of Pipeline resolvers",
 		Value: float64(resolversTotal),
 		Unit:  "",
 	})
 	metrics = append(metrics, Metric{
 		Key:   "pipeline_resolver_steps_total",
-		Name:  "Total number of pipeline resolver steps",
+		Name:  "Total number of Pipeline resolver steps",
 		Value: float64(stepsTotal),
 		Unit:  "",
 	})
 	pathsMetic := Metric{
 		Key:   "pipeline_resolver_execution_paths_total",
-		Name:  "Total number of pipeline resolver execution paths",
+		Name:  "Total number of Pipeline resolver execution paths",
 		Value: float64(executionPathsTotal),
 		Unit:  "",
 	}
