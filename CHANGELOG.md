@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.7.1](https://github.com/tailor-platform/patterner/compare/v0.7.0...v0.7.1) - 2025-09-24
+### Other Changes
+- chore: fix name by @k1LoW in https://github.com/tailor-platform/patterner/pull/34
+
 ## [v0.7.0](https://github.com/tailor-platform/patterner/compare/v0.6.0...v0.7.0) - 2025-09-24
 ### New Features 🎉
 - feat: add parallel fetching for services by @k1LoW in https://github.com/tailor-platform/patterner/pull/32
