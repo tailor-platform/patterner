@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.7.2](https://github.com/tailor-platform/patterner/compare/v0.7.1...v0.7.2) - 2025-09-25
+### Other Changes
+- docs: update README to fix example configuration and remove implementation notes by @k1LoW in https://github.com/tailor-platform/patterner/pull/36
+
 ## [v0.7.1](https://github.com/tailor-platform/patterner/compare/v0.7.0...v0.7.1) - 2025-09-24
 ### Other Changes
 - chore: fix name by @k1LoW in https://github.com/tailor-platform/patterner/pull/34
