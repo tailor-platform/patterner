@@ -154,17 +154,11 @@ When using the `--out-octocov-path` option, patterner outputs metrics in octocov
       }
     ],
     "acceptables": [
-      "pipeline_resolver_step_coverage_percentage >= 80",
-      "lint_warnings_total <= 5"
+      "current.pipeline_resolver_step_coverage_percentage >= 80",
+      "diff.lint_warnings_total <= 0"
     ]
   }
 ]
-```
-
-**Implementation Notes:**
-```
-<!-- Note: Current implementation has a typo in variable name 'lint_warnigns_total'
-     and potential variable reference issue in metrics.go that should be addressed -->
 ```
 
 ### View Coverage
