@@ -2,6 +2,8 @@ package tailor
 
 import (
 	"testing"
+
+	tailorv1 "buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go/tailor/v1"
 )
 
 func TestClient_Metrics(t *testing.T) {
@@ -24,6 +26,8 @@ func TestClient_Metrics(t *testing.T) {
 				"pipelines_total":                            0,
 				"pipeline_resolvers_total":                   0,
 				"pipeline_resolver_steps_total":              0,
+				"pipeline_resolver_graphql_steps_total":      0,
+				"pipeline_resolver_function_steps_total":     0,
 				"pipeline_resolver_execution_paths_total":    0, // 0 resolvers = 0 paths
 				"tailordbs_total":                            0,
 				"tailordb_types_total":                       0,
@@ -70,6 +74,8 @@ func TestClient_Metrics(t *testing.T) {
 				"pipelines_total":                            1,
 				"pipeline_resolvers_total":                   1,
 				"pipeline_resolver_steps_total":              1,
+				"pipeline_resolver_graphql_steps_total":      0,
+				"pipeline_resolver_function_steps_total":     0,
 				"pipeline_resolver_execution_paths_total":    1, // 1 * 2^0 = 1 (1 step, no tests)
 				"tailordbs_total":                            1,
 				"tailordb_types_total":                       1,
@@ -159,6 +165,8 @@ func TestClient_Metrics(t *testing.T) {
 				"pipelines_total":                            2, // ns1, ns2
 				"pipeline_resolvers_total":                   3, // resolver1, resolver2, resolver3
 				"pipeline_resolver_steps_total":              6, // 2+3+1 steps
+				"pipeline_resolver_graphql_steps_total":      0,
+				"pipeline_resolver_function_steps_total":     0,
 				"pipeline_resolver_execution_paths_total":    6, // 2*2^0 + 3*2^0 + 1*2^0 = 2+3+1 (no tests)
 				"tailordbs_total":                            2, // two TailorDB instances
 				"tailordb_types_total":                       3, // User, Post, Comment
@@ -203,6 +211,8 @@ func TestClient_Metrics(t *testing.T) {
 				"pipelines_total":                            0,
 				"pipeline_resolvers_total":                   0,
 				"pipeline_resolver_steps_total":              0,
+				"pipeline_resolver_graphql_steps_total":      0,
+				"pipeline_resolver_function_steps_total":     0,
 				"pipeline_resolver_execution_paths_total":    0, // 0 resolvers = 0 paths
 				"tailordbs_total":                            1,
 				"tailordb_types_total":                       1,
@@ -589,6 +599,8 @@ func TestClient_Metrics_MetricKeys(t *testing.T) {
 		"pipelines_total",
 		"pipeline_resolvers_total",
 		"pipeline_resolver_steps_total",
+		"pipeline_resolver_graphql_steps_total",
+		"pipeline_resolver_function_steps_total",
 		"pipeline_resolver_execution_paths_total",
 		"tailordbs_total",
 		"tailordb_types_total",
@@ -1032,4 +1044,254 @@ func TestClient_Metrics_ExecutionPaths_EdgeCases(t *testing.T) {
 				expectedExecutionPaths, metricMap["pipeline_resolver_execution_paths_total"])
 		}
 	})
+}
+
+func TestClient_Metrics_StepTypes(t *testing.T) {
+	tests := []struct {
+		name            string
+		resources       *Resources
+		expectedMetrics map[string]float64
+	}{
+		{
+			name: "GraphQL and Function steps counting",
+			resources: &Resources{
+				Pipelines: []*Pipeline{
+					{
+						NamespaceName: "test-namespace",
+						Resolvers: []*PipelineResolver{
+							{
+								Name: "mixed_resolver",
+								Steps: []*PipelineStep{
+									{
+										Name: "graphql_step1",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_GRAPHQL,
+										},
+									},
+									{
+										Name: "graphql_step2",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_GRAPHQL,
+										},
+									},
+									{
+										Name: "function_step1",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_FUNCTION,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedMetrics: map[string]float64{
+				"pipeline_resolver_graphql_steps_total":  2,
+				"pipeline_resolver_function_steps_total": 1,
+				"pipeline_resolver_steps_total":          3,
+			},
+		},
+		{
+			name: "only GraphQL steps",
+			resources: &Resources{
+				Pipelines: []*Pipeline{
+					{
+						NamespaceName: "graphql-namespace",
+						Resolvers: []*PipelineResolver{
+							{
+								Name: "graphql_resolver",
+								Steps: []*PipelineStep{
+									{
+										Name: "step1",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_GRAPHQL,
+										},
+									},
+									{
+										Name: "step2",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_GRAPHQL,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedMetrics: map[string]float64{
+				"pipeline_resolver_graphql_steps_total":  2,
+				"pipeline_resolver_function_steps_total": 0,
+				"pipeline_resolver_steps_total":          2,
+			},
+		},
+		{
+			name: "only Function steps",
+			resources: &Resources{
+				Pipelines: []*Pipeline{
+					{
+						NamespaceName: "function-namespace",
+						Resolvers: []*PipelineResolver{
+							{
+								Name: "function_resolver",
+								Steps: []*PipelineStep{
+									{
+										Name: "step1",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_FUNCTION,
+										},
+									},
+									{
+										Name: "step2",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_FUNCTION,
+										},
+									},
+									{
+										Name: "step3",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_FUNCTION,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedMetrics: map[string]float64{
+				"pipeline_resolver_graphql_steps_total":  0,
+				"pipeline_resolver_function_steps_total": 3,
+				"pipeline_resolver_steps_total":          3,
+			},
+		},
+		{
+			name: "multiple resolvers with mixed step types",
+			resources: &Resources{
+				Pipelines: []*Pipeline{
+					{
+						NamespaceName: "multi-namespace",
+						Resolvers: []*PipelineResolver{
+							{
+								Name: "resolver1",
+								Steps: []*PipelineStep{
+									{
+										Name: "graphql_step",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_GRAPHQL,
+										},
+									},
+									{
+										Name: "function_step",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_FUNCTION,
+										},
+									},
+								},
+							},
+							{
+								Name: "resolver2",
+								Steps: []*PipelineStep{
+									{
+										Name: "graphql_step",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_GRAPHQL,
+										},
+									},
+								},
+							},
+							{
+								Name: "resolver3",
+								Steps: []*PipelineStep{
+									{
+										Name: "function_step1",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_FUNCTION,
+										},
+									},
+									{
+										Name: "function_step2",
+										Operation: PipelineStepOperation{
+											Type: tailorv1.PipelineResolver_OPERATION_TYPE_FUNCTION,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			expectedMetrics: map[string]float64{
+				"pipeline_resolver_graphql_steps_total":  2, // 1 + 1 + 0
+				"pipeline_resolver_function_steps_total": 3, // 1 + 0 + 2
+				"pipeline_resolver_steps_total":          5, // 2 + 1 + 2
+			},
+		},
+		{
+			name: "empty resources - zero counts",
+			resources: &Resources{
+				Pipelines: []*Pipeline{},
+			},
+			expectedMetrics: map[string]float64{
+				"pipeline_resolver_graphql_steps_total":  0,
+				"pipeline_resolver_function_steps_total": 0,
+				"pipeline_resolver_steps_total":          0,
+			},
+		},
+		{
+			name: "resolver with no steps",
+			resources: &Resources{
+				Pipelines: []*Pipeline{
+					{
+						NamespaceName: "empty-resolver-namespace",
+						Resolvers: []*PipelineResolver{
+							{
+								Name:  "empty_resolver",
+								Steps: []*PipelineStep{},
+							},
+						},
+					},
+				},
+			},
+			expectedMetrics: map[string]float64{
+				"pipeline_resolver_graphql_steps_total":  0,
+				"pipeline_resolver_function_steps_total": 0,
+				"pipeline_resolver_steps_total":          0,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cfg := createTestConfig(t)
+			client, err := New(cfg)
+			if err != nil {
+				t.Fatalf("Failed to create client: %v", err)
+			}
+
+			metrics, err := client.Metrics(tt.resources)
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+
+			// Create a map for easier assertion
+			metricMap := make(map[string]float64)
+			for _, m := range metrics {
+				metricMap[m.Key] = m.Value
+			}
+
+			// Verify expected metrics
+			for expectedName, expectedValue := range tt.expectedMetrics {
+				actualValue, exists := metricMap[expectedName]
+				if !exists {
+					t.Errorf("Expected metric %s not found", expectedName)
+					continue
+				}
+				if actualValue != expectedValue {
+					t.Errorf("Metric %s: expected %.0f, got %.0f", expectedName, expectedValue, actualValue)
+				}
+			}
+		})
+	}
 }
