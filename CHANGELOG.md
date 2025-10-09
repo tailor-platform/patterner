@@ -1,5 +1,14 @@
 # Changelog
 
+## [v0.8.0](https://github.com/tailor-platform/patterner/compare/v0.7.1...v0.8.0) - 2025-10-09
+### New Features 🎉
+- feat: add metrics `pipeline_resolver_graphql_steps_total` and `pipeline_resolver_function_steps_total` by @k1LoW in https://github.com/tailor-platform/patterner/pull/42
+### Other Changes
+- docs: update README to fix example configuration and remove implementation notes by @k1LoW in https://github.com/tailor-platform/patterner/pull/36
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/connectrpc/go to v1.19.0-20250908011007-1097bcc7b2bf.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/38
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go to v1.36.10-20250908011007-1097bcc7b2bf.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/41
+- fix(deps): update module connectrpc.com/connect to v1.19.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/39
+
 ## [v0.7.1](https://github.com/tailor-platform/patterner/compare/v0.7.0...v0.7.1) - 2025-09-24
 ### Other Changes
 - chore: fix name by @k1LoW in https://github.com/tailor-platform/patterner/pull/34
