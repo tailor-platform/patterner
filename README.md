@@ -224,6 +224,8 @@ The following metrics are collected and displayed:
 - `pipelines_total` - Total number of pipelines (Unit: count)
 - `pipeline_resolvers_total` - Total number of pipeline resolvers (Unit: count)
 - `pipeline_resolver_steps_total` - Total number of pipeline resolver steps (Unit: count)
+- `pipeline_resolver_graphql_steps_total` - Total number of Pipeline resolver GraphQL steps (Unit: count)
+- `pipeline_resolver_function_steps_total` - Total number of Pipeline resolver Function steps (Unit: count)
 - `pipeline_resolver_execution_paths_total` - Total number of pipeline resolver execution paths (Unit: count)
   - Calculation: Based on the number of steps and tests in each resolver (steps \* 2^tests)
   - Includes overflow detection: Reports error if negative values are encountered

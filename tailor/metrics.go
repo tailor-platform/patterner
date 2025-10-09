@@ -3,6 +3,8 @@ package tailor
 import (
 	"errors"
 	"math"
+
+	tailorv1 "buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go/tailor/v1"
 )
 
 const (
@@ -64,6 +66,8 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 	})
 	resolversTotal := 0
 	stepsTotal := 0
+	graphQLStepsTotal := 0
+	functionStepsTotal := 0
 	executionPathsTotal := 0
 	for _, p := range resources.Pipelines {
 		resolversTotal += len(p.Resolvers)
@@ -73,6 +77,12 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 			for _, s := range r.Steps {
 				if s.Operation.Test != "" {
 					testsCount++
+				}
+				switch s.Operation.Type {
+				case tailorv1.PipelineResolver_OPERATION_TYPE_GRAPHQL:
+					graphQLStepsTotal++
+				case tailorv1.PipelineResolver_OPERATION_TYPE_FUNCTION:
+					functionStepsTotal++
 				}
 			}
 			executionPathsTotal += len(r.Steps) * int(math.Pow(2, float64(testsCount)))
@@ -90,6 +100,19 @@ func (c *Client) Metrics(resources *Resources) ([]Metric, error) {
 		Value: float64(stepsTotal),
 		Unit:  "",
 	})
+	metrics = append(metrics, Metric{
+		Key:   "pipeline_resolver_graphql_steps_total",
+		Name:  "Total number of Pipeline resolver GraphQL steps",
+		Value: float64(graphQLStepsTotal),
+		Unit:  "",
+	})
+	metrics = append(metrics, Metric{
+		Key:   "pipeline_resolver_function_steps_total",
+		Name:  "Total number of Pipeline resolver Function steps",
+		Value: float64(functionStepsTotal),
+		Unit:  "",
+	})
+
 	pathsMetic := Metric{
 		Key:   "pipeline_resolver_execution_paths_total",
 		Name:  "Total number of Pipeline resolver execution paths",
