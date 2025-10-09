@@ -4,8 +4,8 @@ buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.19.0-20250908011007-1097bcc7
 buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.19.0-20250908011007-1097bcc7b2bf.1/go.mod h1:uNILYXpL9PBYjV3n8GL5yqWRG1wuBS6/JpzRqaVIgtA=
 buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.10-20250908011007-1097bcc7b2bf.1 h1:F/a8glC4FlFM2o4b1OsEWF8CyDCVmGAiJ8Kh/Oe7Wv8=
 buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.10-20250908011007-1097bcc7b2bf.1/go.mod h1:po6RqrFzRVYHsnq85z8tc5L7je7UkXpppc0w1ceqD3o=
-connectrpc.com/connect v1.19.0 h1:LuqUbq01PqbtL0o7vn0WMRXzR2nNsiINe5zfcJ24pJM=
-connectrpc.com/connect v1.19.0/go.mod h1:tN20fjdGlewnSFeZxLKb0xwIZ6ozc3OQs2hTXy4du9w=
+connectrpc.com/connect v1.19.1 h1:R5M57z05+90EfEvCY1b7hBxDVOUl45PrtXtAV2fOC14=
+connectrpc.com/connect v1.19.1/go.mod h1:tN20fjdGlewnSFeZxLKb0xwIZ6ozc3OQs2hTXy4du9w=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883 h1:bvNMNQO63//z+xNgfBlViaCIJKLlCJ6/fmUseuG0wVQ=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883/go.mod h1:rCTlJbsFo29Kk6CurOXKm700vrz8f0KW0JNfpkRJY/8=
 github.com/briandowns/spinner v1.23.2 h1:Zc6ecUnI+YzLmJniCfDNaMbW0Wid1d5+qcTq4L2FW8w=

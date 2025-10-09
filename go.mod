@@ -5,7 +5,7 @@ go 1.25.1
 require (
 	buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.19.0-20250908011007-1097bcc7b2bf.1
 	buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.10-20250908011007-1097bcc7b2bf.1
-	connectrpc.com/connect v1.19.0
+	connectrpc.com/connect v1.19.1
 	github.com/briandowns/spinner v1.23.2
 	github.com/creasty/defaults v1.8.0
 	github.com/goccy/go-yaml v1.18.0
