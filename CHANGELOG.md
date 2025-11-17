@@ -1,5 +1,15 @@
 # Changelog
 
+## [v0.9.0](https://github.com/tailor-platform/patterner/compare/v0.8.0...v0.9.0) - 2025-11-17
+### New Features 🎉
+- chore: add User-Agent header to Tailor Platform API requests by @dragon3 in https://github.com/tailor-platform/patterner/pull/49
+### Other Changes
+- fix(deps): update module github.com/vektah/gqlparser/v2 to v2.5.31 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/45
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/connectrpc/go to v1.19.1-20251015043835-ab63191facd7.2 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/43
+- fix(deps): update module golang.org/x/sync to v0.18.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/47
+- fix(deps): update module github.com/olekukonko/tablewriter to v1.1.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/48
+- chore(deps): update actions/setup-go action to v6 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/50
+
 ## [v0.8.0](https://github.com/tailor-platform/patterner/compare/v0.7.1...v0.8.0) - 2025-10-09
 ### New Features 🎉
 - feat: add metrics `pipeline_resolver_graphql_steps_total` and `pipeline_resolver_function_steps_total` by @k1LoW in https://github.com/tailor-platform/patterner/pull/42
