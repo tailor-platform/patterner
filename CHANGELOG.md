@@ -1,5 +1,10 @@
 # Changelog
 
+## [v0.9.1](https://github.com/tailor-platform/patterner/compare/v0.9.0...v0.9.1) - 2025-11-21
+### Other Changes
+- chore(deps): update actions/checkout action to v5.0.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/51
+- chore(deps): update actions/setup-go action to v6.1.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/53
+
 ## [v0.9.0](https://github.com/tailor-platform/patterner/compare/v0.8.0...v0.9.0) - 2025-11-17
 ### New Features 🎉
 - chore: add User-Agent header to Tailor Platform API requests by @dragon3 in https://github.com/tailor-platform/patterner/pull/49
