@@ -4,7 +4,7 @@ go 1.25.1
 
 require (
 	buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.19.1-20251217005300-caecbd187465.2
-	buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.10-20251217005300-caecbd187465.1
+	buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.11-20251217005300-caecbd187465.1
 	connectrpc.com/connect v1.19.1
 	github.com/briandowns/spinner v1.23.2
 	github.com/creasty/defaults v1.8.0
@@ -18,7 +18,7 @@ require (
 )
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.10-20250717185734-6c6e0d3c608e.1 // indirect
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20250717185734-6c6e0d3c608e.1 // indirect
 	github.com/clipperhouse/displaywidth v0.6.0 // indirect
 	github.com/clipperhouse/stringish v0.1.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.3.0 // indirect
