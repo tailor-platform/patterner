@@ -8,7 +8,7 @@ require (
 	connectrpc.com/connect v1.19.1
 	github.com/briandowns/spinner v1.23.2
 	github.com/creasty/defaults v1.8.0
-	github.com/goccy/go-yaml v1.19.0
+	github.com/goccy/go-yaml v1.19.1
 	github.com/k1LoW/duration v1.2.0
 	github.com/olekukonko/tablewriter v1.1.2
 	github.com/spf13/cobra v1.10.2
