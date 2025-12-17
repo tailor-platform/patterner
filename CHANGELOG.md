@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.9.1](https://github.com/tailor-platform/patterner/compare/v0.9.0...v0.9.1) - 2025-12-17
+### Other Changes
+- chore(deps): update actions/checkout action to v5.0.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/51
+- chore(deps): update actions/setup-go action to v6.1.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/53
+- fix(deps): update module github.com/spf13/cobra to v1.10.2 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/58
+- fix(deps): update module github.com/goccy/go-yaml to v1.19.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/54
+- fix(deps): update module github.com/olekukonko/tablewriter to v1.1.2 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/55
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/connectrpc/go to v1.19.1-20251202081801-942bda9344b6.2 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/56
+- fix(deps): update module google.golang.org/protobuf to v1.36.11 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/60
+- fix(deps): update module golang.org/x/sync to v0.19.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/59
+- chore(deps): update songmu/tagpr action to v1.10.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/62
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/connectrpc/go to v1.19.1-20251217005300-caecbd187465.2 - autoclosed by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/63
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go to v1.36.11-20251217005300-caecbd187465.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/61
+- fix(deps): update module github.com/goccy/go-yaml to v1.19.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/64
+
 ## [v0.9.0](https://github.com/tailor-platform/patterner/compare/v0.8.0...v0.9.0) - 2025-11-17
 ### New Features 🎉
 - chore: add User-Agent header to Tailor Platform API requests by @dragon3 in https://github.com/tailor-platform/patterner/pull/49
