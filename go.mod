@@ -3,7 +3,7 @@ module github.com/tailor-platform/patterner
 go 1.25.1
 
 require (
-	buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.19.1-20260115090603-c1d4d051f729.2
+	buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.19.1-20260225084419-742d738c2f6e.2
 	buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.11-20260120090132-14b6eb3a17f3.1
 	connectrpc.com/connect v1.19.1
 	github.com/briandowns/spinner v1.23.2
