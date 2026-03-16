@@ -1,5 +1,27 @@
 # Changelog
 
+## [v0.9.2](https://github.com/tailor-platform/patterner/compare/v0.9.1...v0.9.2) - 2026-03-16
+### Other Changes
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/connectrpc/go to v1.19.1-20260105062423-e5dfac74c08b.2 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/65
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go to v1.36.11-20260105062423-e5dfac74c08b.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/66
+- chore(deps): update songmu/tagpr action to v1.11.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/68
+- chore(deps): update songmu/tagpr action to v1.11.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/70
+- chore(deps): update actions/setup-go action to v6.2.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/71
+- fix(deps): update module github.com/goccy/go-yaml to v1.19.2 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/69
+- fix(deps): update module github.com/olekukonko/tablewriter to v1.1.3 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/74
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go to v1.36.11-20260115090603-c1d4d051f729.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/73
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/connectrpc/go to v1.19.1-20260115090603-c1d4d051f729.2 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/72
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go to v1.36.11-20260120090132-14b6eb3a17f3.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/76
+- chore(deps): update songmu/tagpr action to v1.15.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/77
+- fix(deps): update module github.com/vektah/gqlparser/v2 to v2.5.32 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/79
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go to v1.36.11-20260304051854-03b96fc75535.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/78
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/connectrpc/go to v1.19.1-20260304051854-03b96fc75535.2 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/75
+- chore(deps): update actions/setup-go action to v6.3.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/80
+- chore(deps): update songmu/tagpr action to v1.17.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/81
+- fix(deps): update module buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go to v1.36.11-20260311082537-dc4f25644dc2.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/84
+- fix(deps): update module golang.org/x/sync to v0.20.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/82
+- chore(deps): update reviewdog/action-golangci-lint action to v2.10.0 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/87
+
 ## [v0.9.1](https://github.com/tailor-platform/patterner/compare/v0.9.0...v0.9.1) - 2025-12-17
 ### Other Changes
 - chore(deps): update actions/checkout action to v5.0.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/51
