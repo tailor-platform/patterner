@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.9.3](https://github.com/tailor-platform/patterner/compare/v0.9.2...v0.9.3) - 2026-04-05
+### Other Changes
+- chore(deps): update actions/checkout action to v6 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/92
+- chore(deps): update goreleaser/goreleaser-action action to v7 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/93
+- chore(deps): update songmu/tagpr action to v1.18.1 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/95
+
 ## [v0.9.2](https://github.com/tailor-platform/patterner/compare/v0.9.1...v0.9.2) - 2026-04-03
 ### Other Changes
 - fix(deps): update module buf.build/gen/go/tailor-inc/tailor/connectrpc/go to v1.19.1-20260105062423-e5dfac74c08b.2 by @renovate[bot] in https://github.com/tailor-platform/patterner/pull/65
