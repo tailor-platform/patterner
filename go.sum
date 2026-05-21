@@ -1,11 +1,11 @@
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20250717185734-6c6e0d3c608e.1 h1:w2FnA+sUwLAm3VAF2Ed4e0SlTddb28TIKSov6UBCq1c=
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20250717185734-6c6e0d3c608e.1/go.mod h1:tvtbpgaVXZX4g6Pn+AnzFycuRK3MOz5HJfEGeEllXYM=
-buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.19.1-20260413043905-14dd1d6ea758.2 h1:wsyY15yGRVq4WHcPMdNS/UQbpA9FnWl83BvZiQoe1B4=
-buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.19.1-20260413043905-14dd1d6ea758.2/go.mod h1:8AOo5xJbfFgrkibFJzIpGIXyZvll5eoLOT8mgdRO/+Q=
-buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.11-20260413043905-14dd1d6ea758.1 h1:H2KhbsWR+Tc6o4VvgtBTSjiuRK23M4I2kXcbgjvDozw=
-buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.11-20260413043905-14dd1d6ea758.1/go.mod h1:GL71deI8cQ8FZWLteqqpun9uB7ePxYUE/mTPpFDErx8=
-connectrpc.com/connect v1.19.1 h1:R5M57z05+90EfEvCY1b7hBxDVOUl45PrtXtAV2fOC14=
-connectrpc.com/connect v1.19.1/go.mod h1:tN20fjdGlewnSFeZxLKb0xwIZ6ozc3OQs2hTXy4du9w=
+buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.19.2-20260520024532-61453b832d9a.1 h1:jsxEpp1I3j9gCZycjTdFsk4OSpj1hhGn4kqaWNRrggU=
+buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.19.2-20260520024532-61453b832d9a.1/go.mod h1:31x1e30fBHKuaN7sWKRRxUh2KmvUz6WzNwALVrk0iEA=
+buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.11-20260520024532-61453b832d9a.1 h1:gPOxhjjTzw1OayGlW07ve6RB5Me8EoohWOnzaMwTUVQ=
+buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.11-20260520024532-61453b832d9a.1/go.mod h1:GL71deI8cQ8FZWLteqqpun9uB7ePxYUE/mTPpFDErx8=
+connectrpc.com/connect v1.19.2 h1:McQ83FGdzL+t60peksi0gXC7MQ/iLKgLduAnThbM0mo=
+connectrpc.com/connect v1.19.2/go.mod h1:tN20fjdGlewnSFeZxLKb0xwIZ6ozc3OQs2hTXy4du9w=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883 h1:bvNMNQO63//z+xNgfBlViaCIJKLlCJ6/fmUseuG0wVQ=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883/go.mod h1:rCTlJbsFo29Kk6CurOXKm700vrz8f0KW0JNfpkRJY/8=
 github.com/briandowns/spinner v1.23.2 h1:Zc6ecUnI+YzLmJniCfDNaMbW0Wid1d5+qcTq4L2FW8w=
