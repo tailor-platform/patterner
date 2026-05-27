@@ -2,8 +2,8 @@ buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-202507171857
 buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20250717185734-6c6e0d3c608e.1/go.mod h1:tvtbpgaVXZX4g6Pn+AnzFycuRK3MOz5HJfEGeEllXYM=
 buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.20.0-20260520024532-61453b832d9a.1 h1:pZjlo78EzGAB8qAWvToR2pbFuq5gKbmdCIGZSNgBaIw=
 buf.build/gen/go/tailor-inc/tailor/connectrpc/go v1.20.0-20260520024532-61453b832d9a.1/go.mod h1:cT6IAZLIoPJsQnqUPP75NhdKrjDuJHAMEqxtxQEn7Cw=
-buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.11-20260520024532-61453b832d9a.1 h1:gPOxhjjTzw1OayGlW07ve6RB5Me8EoohWOnzaMwTUVQ=
-buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.11-20260520024532-61453b832d9a.1/go.mod h1:GL71deI8cQ8FZWLteqqpun9uB7ePxYUE/mTPpFDErx8=
+buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.11-20260527033653-01f32960fef8.1 h1:HeUENZVv0yOSbolMAfqhVDaSxTQe+jnYSlWGe8DcIZ8=
+buf.build/gen/go/tailor-inc/tailor/protocolbuffers/go v1.36.11-20260527033653-01f32960fef8.1/go.mod h1:GL71deI8cQ8FZWLteqqpun9uB7ePxYUE/mTPpFDErx8=
 connectrpc.com/connect v1.20.0 h1:6TNDAB+WeNd2uolWNlYczB5E0KNNaVMNUEx8JEUsPmQ=
 connectrpc.com/connect v1.20.0/go.mod h1:A2ygJrukXwWy32vkCAAHNVguZrqZ+jeZ9rGRnGR4dN4=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883 h1:bvNMNQO63//z+xNgfBlViaCIJKLlCJ6/fmUseuG0wVQ=
